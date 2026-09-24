@@ -1,7 +1,12 @@
 mods:
-  - jogo: "Nome do jogo"
-    nome: "Nome do mod"
-    status: "em andamento"
-    pronto: ["Exemplo de coisa pronta"]
-    a_fazer: ["Exemplo de coisa a fazer"]
-    anotacoes: "Suas anotações aqui."
+  - jogo: Terraria
+    icone_jogo: https://www.google.com/imgres?q=terraria.&imgurl=https%3A%2F%2Fdownloadr2.apkmirror.com%2Fwp-content%2Fuploads%2F2019%2F08%2F5d6536e1cb998.png&imgrefurl=https%3A%2F%2Fwww.apkmirror.com%2Fapk%2F505-games-srl%2Fterraria%2Fterraria-1-4-0-5-0-release%2F&docid=3t_lSo1B6Y5eWM&tbnid=QofZUE_v0mEHWM&vet=12ahUKEwjpz7yM7IeXAxUqlZUCHaerPbcQnPAOegUIogUQAA..i&w=512&h=512&hcb=2&ved=2ahUKEwjpz7yM7IeXAxUqlZUCHaerPbcQnPAOegUIogUQAA
+    nome: Monochrome Mod
+    icone_mod: /assets/img/20 Sem Título_20260924155846.png
+    status: planejado
+    pronto:
+      - nada
+    a_fazer:
+      - tudo
+    anotacoes: ''
+    link: ''
