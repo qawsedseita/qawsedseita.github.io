@@ -6,9 +6,9 @@ humores:
   - nome: doente
     marcado: false
   - nome: nao sei dizer
-    marcado: false
-  - nome: deprimido
     marcado: true
+  - nome: deprimido
+    marcado: false
   - nome: raiva
     marcado: false
 suicidio:
@@ -16,8 +16,8 @@ suicidio:
     marcado: false
   - nome: nao
     marcado: false
-  - nome: quero
-    marcado: false
+  - nome: tô querendo, ein?
+    marcado: true
   - nome: tou pensando sobre isso
     marcado: true
   - nome: nunca
