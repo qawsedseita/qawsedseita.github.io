@@ -1,7 +1,7 @@
 ---
-layout: entry
-title: "Sobre mim"
+layout: pagina
+title: Sobre
 permalink: /sobre/
 ---
 
-Sou QAWSED. Por enquanto, isso basta.
+Escreva aqui sobre você (ou sobre o seu personagem).

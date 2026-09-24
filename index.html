@@ -2,40 +2,17 @@
 layout: default
 title: Início
 ---
-<img class="hero" src="{{ '/assets/hero.png' | relative_url }}" alt="Olá, estranho. Seja bem-vindo à minha seita.">
+<!-- PÁGINA INICIAL: tudo aqui é seu. Pode apagar, mudar ou reorganizar. -->
 
-<h1 class="pixel">Este blog foi criado apenas para compartilhar algumas coisas minhas</h1>
+<!-- Exemplo de imagem (coloque o arquivo em assets/img/): -->
+<!-- <img src="{{ '/assets/img/topo.png' | relative_url }}" alt="descrição da imagem"> -->
 
-<div class="intro">
-  <div>
-    <p class="lg">Vou escrever como se eu estivesse escrevendo para um diário.</p>
-    <img src="{{ '/assets/rabiscos.png' | relative_url }}" alt="">
-  </div>
-  <a class="join" href="{{ '/qawsedista/' | relative_url }}">
-    <img src="{{ '/assets/paisagem.png' | relative_url }}" alt="">
-    <span class="tag sm">Quero virar um qawsedista</span>
-    <span class="hand">clique aqui</span>
-  </a>
-</div>
+<h1>Escreva aqui o seu título</h1>
+<p>Escreva aqui o texto de abertura.</p>
 
-<nav class="menu">
-{% for m in site.data.menu %}<div><a class="tag" href="{{ m.u | relative_url }}">{{ m.t }}</a></div>
-{% endfor %}</nav>
-
-<h2 class="big">Qawsed esta</h2>
-<div class="status">
-  <ul class="opts">
-  {% for h in site.data.status.humores %}<li>{{ h }}{% if site.data.status.marcados contains h %}<span class="x">✕</span>{% endif %}</li>
-  {% endfor %}</ul>
-  <div>
-    <p class="q">Suicido hoje<b>?</b></p>
-    <ul class="opts sm">
-    {% for o in site.data.status.pergunta_opcoes %}<li>{{ o }}{% if site.data.status.pergunta_marcada == o %}<span class="x">✕</span>{% endif %}</li>
-    {% endfor %}</ul>
-  </div>
-</div>
-
-<h2 class="big">Diário</h2>
-<ul class="posts">
-{% for p in site.posts limit:8 %}<li><span class="date">{{ p.date | date: "%d/%m/%Y" }}</span> <a class="tag" href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
-{% endfor %}</ul>
+<h2>Diário</h2>
+<ul class="lista-posts">
+{% for post in site.posts %}
+  <li><span class="data">{{ post.date | date: "%d/%m/%Y" }}</span> <a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+{% endfor %}
+</ul>

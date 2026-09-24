@@ -1,0 +1,59 @@
+/* ==========================================================
+   ESTILO DO BLOG — tudo que você quer mudar está aqui.
+   ========================================================== */
+
+/* ---------- 1) SUAS FONTES ----------
+   Coloque os arquivos da fonte em assets/fonts/ com estes nomes:
+     titulo.ttf   (fonte dos títulos)   -> pode ser .ttf, .otf, .woff ou .woff2
+     texto.ttf    (fonte do texto)
+   Para usar mais fontes, copie um bloco @font-face e mude o nome e o arquivo. */
+@font-face{
+  font-family:'FonteTitulo';
+  src:url('../fonts/titulo.woff2'),url('../fonts/titulo.woff'),url('../fonts/titulo.ttf'),url('../fonts/titulo.otf');
+  font-display:swap;
+}
+@font-face{
+  font-family:'FonteTexto';
+  src:url('../fonts/texto.woff2'),url('../fonts/texto.woff'),url('../fonts/texto.ttf'),url('../fonts/texto.otf');
+  font-display:swap;
+}
+
+/* ---------- 2) CORES, FONTES E MEDIDAS ---------- */
+:root{
+  --fundo:#ffffff;
+  --texto:#000000;
+  --destaque:#000000;          /* cor dos links e das etiquetas */
+  --fonte-titulo:'FonteTitulo', Georgia, serif;          /* se faltar a sua fonte, usa a seguinte */
+  --fonte-texto:'FonteTexto', 'Courier New', monospace;
+  --largura:720px;             /* largura máxima do conteúdo */
+  --tamanho-texto:1.05rem;
+}
+
+/* ---------- 3) BASE ---------- */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--fundo);color:var(--texto);font-family:var(--fonte-texto);font-size:var(--tamanho-texto);line-height:1.5}
+.pagina-toda{max-width:var(--largura);margin:0 auto;padding:16px 16px 48px}
+h1,h2,h3{font-family:var(--fonte-titulo);font-weight:400;line-height:1.1}
+a{color:var(--destaque)}
+img{max-width:100%;height:auto;display:block}
+
+/* ---------- 4) TOPO E MENU ---------- */
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;padding:8px 0 24px}
+.nome-do-blog{font-family:var(--fonte-titulo);font-size:1.4rem;text-decoration:none;color:var(--texto)}
+.menu a{margin-left:16px}
+
+/* ---------- 5) LISTA DE POSTS E POSTS ---------- */
+.lista-posts{list-style:none;padding:0}
+.lista-posts li{margin:.6em 0}
+.data{font-size:.8rem;opacity:.6}
+.post p,.post li{max-width:65ch}
+
+/* ---------- 6) EXTRAS (use dentro dos posts com HTML) ---------- */
+.tag{background:var(--destaque);color:var(--fundo);padding:0 .3em;text-transform:uppercase;letter-spacing:.06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.centro{text-align:center}
+.direita{text-align:right}
+
+/* ---------- 7) RODAPÉ ---------- */
+footer{margin-top:56px;font-size:.8rem;opacity:.7}
+.pequeno{font-size:.7rem}
