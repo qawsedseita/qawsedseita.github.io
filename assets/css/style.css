@@ -12,7 +12,7 @@
   --f-vhs:VHS,HomeVideo,monospace;            /* só maiúsculas e sem acento */
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--fundo);color:var(--texto);font:1.05rem/1.5 var(--f-texto)}
+body{margin:0;background:var(--fundo);color:var(--texto);font:1.05rem/1.5 var(--f-texto);cursor:url(../img/cursor-dedo.png) 26 3,pointer}
 .pagina-toda{max-width:var(--largura);margin:0 auto;padding:16px 16px 48px}
 h1,h2,h3{font-family:var(--f-titulo);font-weight:400;line-height:1.1}
 a{color:inherit}
@@ -62,6 +62,24 @@ body{overflow-x:hidden}
 .bixo .q{position:relative;width:48px;height:96px}
 .bixo img{position:absolute;left:0;top:0;width:48px;height:96px;image-rendering:pixelated}
 .voce{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:.6rem;white-space:nowrap}
+/* CLICKER: cubo 3D so em preto e branco, sem cinza nenhum */
+.cliques-n{font-size:clamp(2.2rem,10vw,3.6rem);margin:.1em 0 .3em}
+.cubo-cena{display:flex;justify-content:center;margin:1.2em 0 2em}
+.cubo-wrap{width:180px;height:180px;perspective:700px}
+.cubo{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-24deg) rotateY(35deg)}
+.cubo .face{position:absolute;width:180px;height:180px;background:#fff;border:5px solid #000}
+.cubo .face:before{content:'';position:absolute;inset:16px;border:3px solid #000}
+.cubo .frente{transform:translateZ(90px);background:#000}
+.cubo .frente:before{border-color:#fff}
+.cubo .tras{transform:rotateY(180deg) translateZ(90px)}
+.cubo .direita{transform:rotateY(90deg) translateZ(90px);background:#000}
+.cubo .direita:before{border-color:#fff}
+.cubo .esquerda{transform:rotateY(-90deg) translateZ(90px)}
+.cubo .cima{transform:rotateX(90deg) translateZ(90px);background:#000}
+.cubo .cima:before{border-color:#fff}
+.cubo .baixo{transform:rotateX(-90deg) translateZ(90px)}
+.cubo.pulso{animation:pulso .22s ease}
+@keyframes pulso{0%{filter:none}40%{filter:invert(1)}100%{filter:none}}
 .tag:disabled{opacity:.4;cursor:default}
 /* BALAO DE FALA (aparece em cima do bixinho quando ele comenta) */
 .balao{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:8px;background:#fff;border:2px solid #000;padding:.25em .5em;font-size:.62rem;line-height:1.25;max-width:150px;white-space:normal;text-align:left;z-index:99}

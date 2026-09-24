@@ -3,27 +3,17 @@ var B=document.currentScript.dataset.base||'/',S=window.localStorage;
 var SBU=document.currentScript.dataset.sbUrl,SBK=document.currentScript.dataset.sbKey;
 var sb=(SBU&&SBK&&window.supabase)?window.supabase.createClient(SBU,SBK):null;
 if(!sb)console.info('QAWSED: comentarios/comida desligados (falta data-sb-url/data-sb-key ou lib do supabase)');
-/* ---- MUSICA EM LOOP: de 0 ate 20,45 s (30 batidas a 88 BPM), sem falha ---- */
-var AC=window.AudioContext||window.webkitAudioContext,ctx,buf,src,t0=0,on=false,pos=parseFloat(S.mt)||0;
+/* ---- MUSICA: toca a faixa inteira em loop normal, sem corte ---- */
+var au=new Audio(B+'assets/audio/vhs.mp3');au.loop=true;au.volume=.5;au.currentTime=parseFloat(S.mt)||0;
 var b=document.createElement('button');b.className='tag musica';document.body.appendChild(b);
-function lab(){b.textContent=on?'MUSICA: ON':'MUSICA: OFF'}lab();
-function carregar(){
-  if(buf)return Promise.resolve();ctx=ctx||new AC();
-  return fetch(B+'assets/audio/fundo.wav').then(function(r){return r.arrayBuffer()}).then(function(d){return ctx.decodeAudioData(d)}).then(function(x){buf=x});
-}
-function tocar(){
-  carregar().then(function(){return ctx.resume()}).then(function(){
-    if(on||ctx.state!=='running')return;
-    var g=ctx.createGain();g.gain.value=.5;g.connect(ctx.destination);
-    src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(g);
-    var o=pos%buf.duration;src.start(0,o);t0=ctx.currentTime-o;on=true;S.mus='1';lab();
-  }).catch(function(){});
-}
-function parar(){if(!on)return;pos=(ctx.currentTime-t0)%buf.duration;src.stop();on=false;S.mus='0';S.mt=pos;lab()}
-b.onclick=function(){on?parar():tocar()};
-function salva(){if(on)S.mt=(ctx.currentTime-t0)%buf.duration}
+function lab(){b.textContent=au.paused?'MUSICA: OFF':'MUSICA: ON'}lab();
+au.addEventListener('play',lab);au.addEventListener('pause',lab);
+function tocar(){au.play().then(function(){S.mus='1'}).catch(function(){})}
+function parar(){au.pause();S.mus='0'}
+b.onclick=function(){au.paused?tocar():parar()};
+function salva(){S.mt=au.currentTime}
 setInterval(salva,1000);addEventListener('pagehide',salva);
-if(S.mus!=='0'){tocar();document.addEventListener('click',function(){if(!on&&S.mus!=='0')tocar()},{once:true})}
+if(S.mus!=='0'){tocar();document.addEventListener('click',function(){if(au.paused&&S.mus!=='0')tocar()},{once:true})}
 /* ---- POVO: um bixinho por pessoa que viu, andando solto ---- */
 function rnd(s){s=Math.sin(s*9301+49297)*233280;return s-Math.floor(s)}
 var el=document.getElementById('povo');if(!el)return;
