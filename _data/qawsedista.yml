@@ -1,18 +1,26 @@
 perguntas:
-  - texto: Você confia no escuro?
+  - texto: Se você estivesse andando a noite em uma rua deserta completamente sozinho(a) e faltasse luz nesse momento, como agiria?
+    opcoes:
+      - Eu meteria o pé dali, slk que medo
+      - Ficaria só com medo mesmo
+      - Ia pegar meu celular e ligar o flash
+      - Não sei
+  - texto: Você acha que ser Puta é um emprego digno?
     opcoes:
       - Sim
       - Não
-      - Depende
-  - texto: Qual letra você escolhe?
+  - texto: Você acha que deveria ter ginecologista homem?
     opcoes:
-      - Q
-      - A
-      - W
-      - S
-      - E
-      - D
+      - NUNCA
+      - Sim
+      - Não
+      - Sei lá man, fica me perguntando as coisa
 funcoes:
-  - Guardiao da Porta
-  - Escriba
-  - Portador do Estandarte
+  - Porteiro
+  - Zelador
+  - Empregado doméstico(a)
+  - Jahwyya's Hwveyd.
+  - Plebeu
+  - Zé ninguém
+  - Palhaço
+  - Seguidor, Aleluia
