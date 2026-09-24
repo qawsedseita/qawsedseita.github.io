@@ -34,7 +34,7 @@ function bixo(i,eu){
   if(eu){var t=document.createElement('span');t.className='tag voce';t.textContent='VOCE';d.appendChild(t)}
   el.appendChild(d);
   var x=rnd(i*11+3)*(el.clientWidth-W),y=rnd(i*13+7)*(el.clientHeight-H);
-  bichos.push({d:d,q:q,x:x,y:y,tx:x,ty:y,esp:18+rnd(i*17+1)*22,par:rnd(i*19)*3,f:1,i:i});
+  bichos.push({d:d,q:q,x:x,y:y,tx:x,ty:y,esp:18+rnd(i*17+1)*22,par:rnd(i*19)*3,f:-1,i:i});
 }
 var ult=performance.now();
 function anda(agora){
@@ -44,7 +44,7 @@ function anda(agora){
     if(b.par>0){b.par-=dt;if(b.par<=0){b.tx=Math.random()*w;b.ty=Math.random()*h}}   /* parado, olhando em volta */
     else{var dx=b.tx-b.x,dy=b.ty-b.y,dist=Math.hypot(dx,dy);
       if(dist<3){b.par=1+Math.random()*4}
-      else{b.x+=dx/dist*b.esp*dt;b.y+=dy/dist*b.esp*dt;if(Math.abs(dx)>2)b.f=dx<0?-1:1}}
+      else{b.x+=dx/dist*b.esp*dt;b.y+=dy/dist*b.esp*dt;if(Math.abs(dx)>2)b.f=dx<0?1:-1}}
     var an=b.par<=0,s=an?Math.sin(agora/90+b.i):0;                                    /* balancinho de quem anda */
     b.d.style.transform='translate('+Math.min(b.x,w)+'px,'+(b.y-Math.abs(s)*4)+'px)';
     b.q.style.transform='scaleX('+b.f+') rotate('+s*4+'deg)';
