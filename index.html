@@ -1,18 +1,33 @@
 ---
 layout: default
-title: Início
+title: QawsedHub
 ---
-<!-- PÁGINA INICIAL: tudo aqui é seu. Pode apagar, mudar ou reorganizar. -->
+<section class="hero">
+  <h1 class="sigil">OLÁ, ESTRANHO</h1>
+  <p class="titulo">se ja bem vindo a minha seita</p>
+  <img src="{{ '/assets/img/logo.png' | relative_url }}" alt="Símbolo QSW">
+  <img src="{{ '/assets/img/catedral.png' | relative_url }}" alt="Catedral com estandartes">
+</section>
 
-<!-- Exemplo de imagem (coloque o arquivo em assets/img/): -->
-<!-- <img src="{{ '/assets/img/topo.png' | relative_url }}" alt="descrição da imagem"> -->
+<p class="titulo grande">Este blog foi criado apenas para compartilhar algumas coisas minhas.</p>
 
-<h1>Escreva aqui o seu título</h1>
-<p>Escreva aqui o texto de abertura.</p>
-
-<h2>Diário</h2>
-<ul class="lista-posts">
-{% for post in site.posts %}
-  <li><span class="data">{{ post.date | date: "%d/%m/%Y" }}</span> <a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+<h2 class="sigil big">QAWNEWS</h2>
+{% for n in site.data.qawnews %}
+<article class="news">
+  <span class="vhs">{{ n.data | date: "%d/%m/%Y" }} · {% if n.tipo == 'boa' %}BOA NOVA{% else %}MA NOTICIA{% endif %}</span>
+  <p>{{ n.texto }}</p>
+</article>
 {% endfor %}
-</ul>
+
+<h2 class="sigil big">QAWSED ESTA</h2>
+<div class="status">
+  <ul class="checks">
+  {% for h in site.data.status.humores %}<li class="vhs"><span class="cx {% if site.data.status.marcados contains h %}on{% endif %}"></span>{{ h }}</li>
+  {% endfor %}</ul>
+  <div>
+    <p class="vhs pergunta">SUICIDIO HOJE?</p>
+    <ul class="checks">
+    {% for o in site.data.status.pergunta_opcoes %}<li class="vhs"><span class="cx {% if site.data.status.pergunta_marcada == o %}on{% endif %}"></span>{{ o }}</li>
+    {% endfor %}</ul>
+  </div>
+</div>

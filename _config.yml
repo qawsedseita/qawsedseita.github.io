@@ -1,8 +1,13 @@
-# ===== CONFIGURAÇÕES DO BLOG =====
-title: QAWSED                 # nome do blog (aparece no topo e na aba)
-description: Escreva aqui uma frase sobre o blog.
+title: QAWSEDHUB
+description: A seita de QAWSED.
 lang: pt-BR
 timezone: America/Sao_Paulo
-baseurl: ""                   # deixe vazio se o repositório for usuario.github.io
-permalink: /diario/:title/    # endereço dos posts
+baseurl: ""
 exclude: [README.md]
+collections:
+  sonhos:
+    output: true
+    permalink: /sonhos/:name/
+defaults:
+  - scope: {path: "", type: sonhos}
+    values: {layout: post}

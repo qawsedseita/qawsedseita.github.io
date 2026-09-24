@@ -1,0 +1,9 @@
+---
+layout: pagina
+title: Sonhos interessantes
+permalink: /sonhos/
+---
+<ul class="lista">
+{% assign notas = site.sonhos | sort: 'date' | reverse %}
+{% for s in notas %}<li><span class="vhs">{{ s.date | date: "%d/%m/%Y" }}</span> <a href="{{ s.url | relative_url }}">{{ s.title }}</a></li>
+{% endfor %}</ul>

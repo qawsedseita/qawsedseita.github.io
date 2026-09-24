@@ -1,0 +1,10 @@
+# Você cria as perguntas. No fim, a máquina sorteia SIM ou NAO (só cosmético).
+perguntas:
+  - texto: "Você confia no escuro?"
+    opcoes: ["Sim", "Não", "Depende"]
+  - texto: "Qual letra você escolhe?"
+    opcoes: ["Q", "A", "W", "S", "E", "D"]
+funcoes:
+  - "Guardiao da Porta"
+  - "Escriba"
+  - "Portador do Estandarte"

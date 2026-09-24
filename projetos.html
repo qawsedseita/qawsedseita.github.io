@@ -1,0 +1,18 @@
+---
+layout: pagina
+title: Projetos recentes
+permalink: /projetos/
+---
+{% for g in site.data.projetos %}
+<details class="grupo" open>
+  <summary class="tag">{{ g.grupo }}</summary>
+  {% if g.descricao %}<p>{{ g.descricao }}</p>{% endif %}
+  {% for p in g.projetos %}
+  <div class="card">
+    {% if p.imagem and p.imagem != "" %}<img src="{{ '/assets/img/' | append: p.imagem | relative_url }}" alt="">{% endif %}
+    <h3>{% if p.link and p.link != "" %}<a href="{{ p.link }}">{{ p.titulo }}</a>{% else %}{{ p.titulo }}{% endif %}</h3>
+    <p>{{ p.texto }}</p>
+  </div>
+  {% endfor %}
+</details>
+{% endfor %}

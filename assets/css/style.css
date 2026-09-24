@@ -1,59 +1,48 @@
-/* ==========================================================
-   ESTILO DO BLOG — tudo que você quer mudar está aqui.
-   ========================================================== */
-
-/* ---------- 1) SUAS FONTES ----------
-   Coloque os arquivos da fonte em assets/fonts/ com estes nomes:
-     titulo.ttf   (fonte dos títulos)   -> pode ser .ttf, .otf, .woff ou .woff2
-     texto.ttf    (fonte do texto)
-   Para usar mais fontes, copie um bloco @font-face e mude o nome e o arquivo. */
-@font-face{
-  font-family:'FonteTitulo';
-  src:url('../fonts/titulo.woff2'),url('../fonts/titulo.woff'),url('../fonts/titulo.ttf'),url('../fonts/titulo.otf');
-  font-display:swap;
-}
-@font-face{
-  font-family:'FonteTexto';
-  src:url('../fonts/texto.woff2'),url('../fonts/texto.woff'),url('../fonts/texto.ttf'),url('../fonts/texto.otf');
-  font-display:swap;
-}
-
-/* ---------- 2) CORES, FONTES E MEDIDAS ---------- */
+/* FONTES (arquivos em assets/fonts/) */
+@font-face{font-family:Sigil;src:url(../fonts/sigil.ttf)}
+@font-face{font-family:ComicBald;src:url(../fonts/comic.otf)}
+@font-face{font-family:HomeVideo;src:url(../fonts/home.ttf)}
+@font-face{font-family:HomeVideo;font-weight:700;src:url(../fonts/homebold.ttf)}
+@font-face{font-family:VHS;src:url(../fonts/vhs.ttf)}
 :root{
-  --fundo:#ffffff;
-  --texto:#000000;
-  --destaque:#000000;          /* cor dos links e das etiquetas */
-  --fonte-titulo:'FonteTitulo', Georgia, serif;          /* se faltar a sua fonte, usa a seguinte */
-  --fonte-texto:'FonteTexto', 'Courier New', monospace;
-  --largura:720px;             /* largura máxima do conteúdo */
-  --tamanho-texto:1.05rem;
+  --fundo:#fff;--texto:#000;--largura:720px;
+  --f-sigil:Sigil,HomeVideo,serif;            /* gótica: nome e títulos grandes */
+  --f-titulo:ComicBald,HomeVideo,sans-serif;  /* títulos comuns (sem acentos: usa a Home Video neles) */
+  --f-texto:HomeVideo,'Courier New',monospace;
+  --f-vhs:VHS,HomeVideo,monospace;            /* só maiúsculas e sem acento */
 }
-
-/* ---------- 3) BASE ---------- */
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--fundo);color:var(--texto);font-family:var(--fonte-texto);font-size:var(--tamanho-texto);line-height:1.5}
+body{margin:0;background:var(--fundo);color:var(--texto);font:1.05rem/1.5 var(--f-texto)}
 .pagina-toda{max-width:var(--largura);margin:0 auto;padding:16px 16px 48px}
-h1,h2,h3{font-family:var(--fonte-titulo);font-weight:400;line-height:1.1}
-a{color:var(--destaque)}
+h1,h2,h3{font-family:var(--f-titulo);font-weight:400;line-height:1.1}
+a{color:inherit}
 img{max-width:100%;height:auto;display:block}
-
-/* ---------- 4) TOPO E MENU ---------- */
-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;padding:8px 0 24px}
-.nome-do-blog{font-family:var(--fonte-titulo);font-size:1.4rem;text-decoration:none;color:var(--texto)}
-.menu a{margin-left:16px}
-
-/* ---------- 5) LISTA DE POSTS E POSTS ---------- */
-.lista-posts{list-style:none;padding:0}
-.lista-posts li{margin:.6em 0}
-.data{font-size:.8rem;opacity:.6}
-.post p,.post li{max-width:65ch}
-
-/* ---------- 6) EXTRAS (use dentro dos posts com HTML) ---------- */
-.tag{background:var(--destaque);color:var(--fundo);padding:0 .3em;text-transform:uppercase;letter-spacing:.06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
-.centro{text-align:center}
-.direita{text-align:right}
-
-/* ---------- 7) RODAPÉ ---------- */
-footer{margin-top:56px;font-size:.8rem;opacity:.7}
-.pequeno{font-size:.7rem}
+/* TODA imagem em preto e branco puro (sem cinza). Para liberar uma imagem: class="cor" */
+main img{filter:grayscale(1) contrast(1000%)}
+main img.cor{filter:none}
+.sigil{font-family:var(--f-sigil);font-weight:400;letter-spacing:.06em}
+.vhs{font-family:var(--f-vhs);text-transform:uppercase;letter-spacing:.08em}
+.titulo{font-family:var(--f-titulo);font-size:1.4rem;margin:.4em 0}
+.titulo.grande{font-size:clamp(1.4rem,6vw,2.2rem);line-height:1.1}
+.big{font-size:clamp(1.8rem,9vw,3.2rem);margin:1em 0 .4em}
+.tag{background:#000;color:#fff;padding:0 .3em;text-decoration:none;font:inherit;font-family:var(--f-vhs);text-transform:uppercase;letter-spacing:.06em;border:0;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 20px;padding:8px 0 20px}
+.nome-do-blog{font-family:var(--f-sigil);font-size:1.6rem;text-decoration:none;letter-spacing:.1em}
+.menu{display:flex;flex-wrap:wrap;gap:6px 10px}
+.hero{text-align:center}
+.hero h1{font-size:clamp(2rem,10vw,4rem);margin:.2em 0 0}
+.hero img{margin:16px auto}
+.news{margin:1em 0}.news p{margin:.2em 0}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{margin:.35em 0}
+.cx{display:inline-block;width:1em;height:1em;border:2px solid #000;margin-right:.5em;vertical-align:-.15em}
+.cx.on{background:#000}
+.pergunta{font-size:1.2rem;margin:0 0 .5em}
+.faixa,.card{margin:1.5em 0}
+audio{width:100%}
+.grupo{margin:1.5em 0}.grupo summary{cursor:pointer;display:list-item}
+.card{padding-left:12px;border-left:2px solid #000}
+.lista{list-style:none;padding:0}.lista li{margin:.6em 0}
+#q button{display:block;margin:.5em 0;font-size:1.1rem;padding:.2em .6em}
+footer{margin-top:56px;font-size:.8rem;opacity:.7}.pequeno{font-size:.7rem}

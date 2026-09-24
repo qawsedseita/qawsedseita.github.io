@@ -1,0 +1,22 @@
+---
+layout: pagina
+title: Quero virar qawsedista
+permalink: /qawsedista/
+---
+<div id="q"></div>
+<script>
+const D={{ site.data.qawsedista | jsonify }};
+const el=document.getElementById('q');let i=0;
+function show(){
+  if(i>=D.perguntas.length){
+    const s=Math.random()<.5;
+    el.innerHTML='<p class="vhs">A MAQUINA ESCOLHEU</p><p class="sigil big">'+(s?'SIM':'NAO')+'</p>'+
+      (s?'<p>Sua funcao: <b>'+D.funcoes[Math.floor(Math.random()*D.funcoes.length)]+'</b></p>':'<p>A porta continua fechada.</p>')+
+      '<p><a href="">tentar de novo</a></p>';return;
+  }
+  const p=D.perguntas[i];
+  el.innerHTML='<p class="vhs">'+(i+1)+' / '+D.perguntas.length+'</p><p>'+p.texto+'</p>';
+  p.opcoes.forEach(o=>{const b=document.createElement('button');b.className='tag';b.textContent=o;b.onclick=()=>{i++;show()};el.appendChild(b)});
+}
+show();
+</script>
