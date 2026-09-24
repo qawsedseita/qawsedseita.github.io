@@ -74,6 +74,24 @@ collections:
               - {label: Título, name: titulo, widget: string}
               - {label: Link da playlist, name: url, widget: string}
               - {label: Comentário (opcional), name: comentario, widget: text, required: false}
+      - name: mods
+        label: Mods
+        file: _data/mods.yml
+        fields:
+          - label: Mods
+            name: mods
+            widget: list
+            summary: "{{fields.jogo}} · {{fields.nome}}"
+            fields:
+              - {label: Nome do jogo, name: jogo, widget: string}
+              - {label: Ícone do jogo, name: icone_jogo, widget: image, required: false}
+              - {label: Nome do mod, name: nome, widget: string}
+              - {label: Ícone do mod, name: icone_mod, widget: image, required: false}
+              - {label: Status, name: status, widget: select, options: [planejado, em andamento, pronto]}
+              - {label: Já está pronto (um item por linha), name: pronto, widget: list, required: false}
+              - {label: A fazer, name: a_fazer, widget: list, required: false}
+              - {label: Anotações, name: anotacoes, widget: markdown, required: false}
+              - {label: Link, name: link, widget: string, required: false}
       - name: projetos
         label: Projetos
         file: _data/projetos.yml

@@ -3,6 +3,25 @@ layout: pagina
 title: Projetos recentes
 permalink: /projetos/
 ---
+<h2 class="sigil big">MODS</h2>
+{% for m in site.data.mods.mods %}
+<article class="mod">
+  <div class="icones">
+    {% if m.icone_jogo and m.icone_jogo != "" %}<img class="icone" src="{{ m.icone_jogo | relative_url }}" alt="{{ m.jogo }}">{% endif %}
+    {% if m.icone_mod and m.icone_mod != "" %}<img class="icone" src="{{ m.icone_mod | relative_url }}" alt="{{ m.nome }}">{% endif %}
+  </div>
+  <div>
+    <h3>{{ m.nome }} <span class="tag sm">{{ m.status }}</span></h3>
+    <p class="vhs">{{ m.jogo }}</p>
+    {% if m.pronto.size > 0 %}<h4 class="vhs">PRONTO</h4><ul>{% for i in m.pronto %}<li>{{ i }}</li>{% endfor %}</ul>{% endif %}
+    {% if m.a_fazer.size > 0 %}<h4 class="vhs">A FAZER</h4><ul>{% for i in m.a_fazer %}<li>{{ i }}</li>{% endfor %}</ul>{% endif %}
+    {% if m.anotacoes and m.anotacoes != "" %}<h4 class="vhs">ANOTACOES</h4>{{ m.anotacoes | markdownify }}{% endif %}
+    {% if m.link and m.link != "" %}<p><a href="{{ m.link }}">link</a></p>{% endif %}
+  </div>
+</article>
+{% endfor %}
+
+<h2 class="sigil big">OUTROS</h2>
 {% for g in site.data.projetos.grupos %}
 <details class="grupo" open>
   <summary class="tag">{{ g.grupo }}</summary>

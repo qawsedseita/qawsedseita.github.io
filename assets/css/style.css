@@ -46,3 +46,15 @@ audio{width:100%}
 .lista{list-style:none;padding:0}.lista li{margin:.6em 0}
 #q button{display:block;margin:.5em 0;font-size:1.1rem;padding:.2em .6em}
 footer{margin-top:56px;font-size:.8rem;opacity:.7}.pequeno{font-size:.7rem}
+/* PERSONAGENS (todos 128x128) e MÚSICA */
+.povo{display:flex;flex-wrap:wrap;gap:6px}
+.bixo{position:relative;width:128px;height:128px;flex:none;background:center/100% 100% no-repeat}
+.bixo img{position:absolute;left:40px;top:16px;width:48px;height:96px;image-rendering:pixelated}
+.musica{position:fixed;right:10px;bottom:10px;z-index:9;padding:.2em .6em;font-size:.8rem}
+/* MOLDURAS (as formas viram borda) */
+.news{border:22px solid transparent;border-image:url(../img/formas/qawnews.png) 64/22px stretch;padding:2px 8px}
+.mod{display:flex;gap:14px;margin:1.5em 0;border:22px solid transparent;border-image:url(../img/formas/forma1.png) 64/22px stretch;padding:2px 8px}
+.icones{display:flex;flex-direction:column;gap:6px;flex:none}
+.icone{width:64px;height:64px;object-fit:cover}
+.mod h3{margin:0 0 .2em}.mod h4{margin:.8em 0 .2em}.mod ul{margin:0;padding-left:1.2em}
+.tag.sm{font-size:.7rem}

@@ -1,0 +1,7 @@
+mods:
+  - jogo: "Nome do jogo"
+    nome: "Nome do mod"
+    status: "em andamento"
+    pronto: ["Exemplo de coisa pronta"]
+    a_fazer: ["Exemplo de coisa a fazer"]
+    anotacoes: "Suas anotações aqui."
