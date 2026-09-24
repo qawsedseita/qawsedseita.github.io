@@ -1,4 +1,13 @@
-faixas: []
+faixas:
+  - titulo: Jungle e Maconhas Voadoras
+    arquivo: /assets/audio/Jungles e Maconhas Voadoras.mp3
+    comentario: ''
+  - titulo: Musica baixa
+    arquivo: /assets/audio/4267MusicBaixaPraCarai (1).mp3
+    comentario: a intro dela é muito longo, mas é a minha favorita
+  - titulo: Mumusisicaca
+    arquivo: /assets/audio/tentando melhorar oq tava ruim.mp3
+    comentario: essa música é muito ruim... muito ruim...
 playlists_soundcloud:
   - titulo: Músicas de um iniciante
     url: https://soundcloud.com/sinepoma/sets/fanatical-sweets-1
