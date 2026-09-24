@@ -1,9 +1,9 @@
 /* FONTES (arquivos em assets/fonts/) */
-@font-face{font-family:Sigil;src:url(../fonts/sigil.ttf)}
-@font-face{font-family:ComicBald;src:url(../fonts/comic.otf)}
-@font-face{font-family:HomeVideo;src:url(../fonts/home.ttf)}
-@font-face{font-family:HomeVideo;font-weight:700;src:url(../fonts/homebold.ttf)}
-@font-face{font-family:VHS;src:url(../fonts/vhs.ttf)}
+@font-face{font-family:Sigil;src:url(../fonts/sigil.woff2) format('woff2'),url(../fonts/sigil.ttf)}
+@font-face{font-family:ComicBald;src:url(../fonts/comic.woff2) format('woff2'),url(../fonts/comic.otf)}
+@font-face{font-family:HomeVideo;src:url(../fonts/home.woff2) format('woff2'),url(../fonts/home.ttf)}
+@font-face{font-family:HomeVideo;font-weight:700;src:url(../fonts/homebold.woff2) format('woff2'),url(../fonts/homebold.ttf)}
+@font-face{font-family:VHS;src:url(../fonts/vhs.woff2) format('woff2'),url(../fonts/vhs.ttf)}
 :root{
   --fundo:#fff;--texto:#000;--largura:720px;
   --f-sigil:Sigil,HomeVideo,serif;            /* gótica: nome e títulos grandes */
