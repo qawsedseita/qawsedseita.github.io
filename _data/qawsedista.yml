@@ -1,11 +1,11 @@
 perguntas:
-  - texto: Se você estivesse andando a noite em uma rua deserta completamente sozinho(a) e faltasse luz nesse momento, como agiria?
+  - texto: Se voce estivesse andando a noite em uma rua deserta completamente sozinho(a) e faltasse luz nesse momento, como agiria?
     opcoes:
-      - Eu meteria o pé dali, slk que medo
-      - Ficaria só com medo mesmo
+      - Eu meteria o pe dali, slk que medo
+      - Ficaria so com medo mesmo
       - Ia pegar meu celular e ligar o flash
-      - Não sei
-  - texto: Você acha que ser Puta é um emprego digno?
+      - Nao sei
+  - texto: Você acha que ser Puta e um emprego digno?
     opcoes:
       - Sim
       - Não
@@ -15,6 +15,16 @@ perguntas:
       - Sim
       - Não
       - Sei lá man, fica me perguntando as coisa
+  - texto: voce acha que
+    opcoes:
+      - que oque?
+      - sim
+      - não
+  - texto: oque voce enterraria?
+    opcoes:
+      - um corpo
+      - dinheiro
+      - objeto valioso
 funcoes:
   - Porteiro
   - Zelador
