@@ -18,6 +18,7 @@
   </main>
   {% include rodape.html %}
 </div>
-<script src="{{ '/assets/js/hub.js' | relative_url }}" data-base="{{ '/' | relative_url }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+<script src="{{ '/assets/js/hub.js' | relative_url }}" data-base="{{ '/' | relative_url }}" data-sb-url="{{ site.supabase_url }}" data-sb-key="{{ site.supabase_anon_key }}" defer></script>
 </body>
 </html>

@@ -62,3 +62,20 @@ body{overflow-x:hidden}
 .bixo .q{position:relative;width:48px;height:96px}
 .bixo img{position:absolute;left:0;top:0;width:48px;height:96px;image-rendering:pixelated}
 .voce{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:.6rem;white-space:nowrap}
+.tag:disabled{opacity:.4;cursor:default}
+/* BALAO DE FALA (aparece em cima do bixinho quando ele comenta) */
+.balao{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:8px;background:#fff;border:2px solid #000;padding:.25em .5em;font-size:.62rem;line-height:1.25;max-width:150px;white-space:normal;text-align:left;z-index:99}
+.balao b{font-family:var(--f-vhs);text-transform:uppercase;letter-spacing:.03em}
+.balao:after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#000}
+/* FEED DE COMENTARIOS (lista embaixo do povo, pra quem nao ta mais na tela) */
+.povo-comentarios{margin:.6em 0 0;font-size:.78rem;max-height:180px;overflow-y:auto}
+.povo-comentarios p{margin:.25em 0}
+.povo-comentarios b{font-family:var(--f-vhs);text-transform:uppercase;font-size:.9em}
+/* COMIDA (some no chao ate ser comida) */
+.comida{position:absolute;left:0;top:0;font-size:1.8rem;z-index:6;pointer-events:none}
+/* O QAWSED SURGINDO (cutscene com os gifs) */
+.qawsed-ov{position:fixed;bottom:0;left:-30%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:999;opacity:1;transition:left 1.5s linear,opacity .9s linear;pointer-events:none}
+.qawsed-ov.in{left:50%}
+.qawsed-ov.out{opacity:0}
+.qawsed-img{width:190px;height:auto;image-rendering:auto}
+.qawsed-tag{font-size:.7rem}
