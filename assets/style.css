@@ -1,0 +1,30 @@
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#fff;color:#000;font-family:'Share Tech Mono','Courier New',monospace;line-height:1.4;font-size:1.05rem}
+.wrap{max-width:720px;margin:0 auto;padding:12px 16px 48px}
+a{color:inherit}
+.topbar{padding:8px 0;font-size:.8rem;letter-spacing:.15em}
+.topbar a{text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+.hero{width:100%}
+.pixel{font-family:'Pixelify Sans','Courier New',monospace;font-weight:400;font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;margin:.6em 0}
+.lg{font-size:clamp(1rem,4.6vw,1.6rem);letter-spacing:.03em;line-height:1.15;margin:0 0 12px}
+.intro{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;align-items:start}
+.join{text-decoration:none;text-align:center}
+.tag{background:#000;color:#fff;padding:0 .3em;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.tag.sm{font-size:.7rem;display:inline-block;margin-top:6px}
+.hand{display:block;font-family:'Pixelify Sans',cursive;opacity:.6;margin-top:2px}
+.menu{text-align:right;margin:36px 0;font-size:clamp(.95rem,4.2vw,1.4rem);line-height:1.6}
+.big{font-weight:400;text-transform:uppercase;letter-spacing:.12em;font-size:clamp(1.8rem,9vw,3.4rem);margin:.9em 0 .4em}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+.opts{list-style:none;margin:0;padding:0;text-align:right;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(.9rem,4vw,1.4rem);line-height:1.25}
+.opts.sm{font-size:clamp(.7rem,3vw,1rem)}
+.x{display:inline-block;transform:rotate(-8deg);opacity:.7;font-size:1.5em;line-height:0;margin-left:.15em}
+.q{text-transform:uppercase;letter-spacing:.1em;font-size:clamp(1.1rem,5.5vw,1.9rem);text-align:right;margin:0 0 10px}
+.q b{font-weight:400;font-size:2.2em;vertical-align:-.12em}
+.posts{list-style:none;padding:0;margin:0}
+.posts li{margin:.5em 0}
+.date{font-size:.8rem;opacity:.6;margin-right:.4em}
+article p,article li{max-width:60ch}
+footer{margin-top:56px;font-size:.8rem;opacity:.7}
+footer .sm{font-size:.7rem}

@@ -1,0 +1,8 @@
+title: QAWSED
+description: Blog anônimo do dono de uma seita.
+lang: pt-BR
+timezone: America/Sao_Paulo
+# Se o repositório for SEU-USUARIO.github.io, deixe baseurl vazio.
+# Se tiver outro nome (ex.: seita), use baseurl: "/seita"
+baseurl: ""
+permalink: /diario/:title/

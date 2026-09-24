@@ -1,0 +1,4 @@
+humores: [triste, feliz, doente, nao sei dizer, deprimido, raiva]
+marcados: [feliz, nao sei dizer, raiva]
+pergunta_opcoes: [sim, nao, quero, tou pensando sobre isso, nunca]
+pergunta_marcada: nao
