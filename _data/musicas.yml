@@ -1,2 +1,8 @@
 faixas: []
-playlists_soundcloud: []
+playlists_soundcloud:
+  - titulo: Músicas de um iniciante
+    url: https://m.soundcloud.com/sinepoma/sets/fanatical-sweets-1
+    comentario: |-
+      Essas músicas eu compartilhava elas em um servidor do discord de jogos, e eles valorizavam meu esforço :)
+      O ruim é que a maioria era gringo, então por isso as músicas com o nome em inglês.
+      Sinep Oma foi um dos meus primeiros apelidos.
