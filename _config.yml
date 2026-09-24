@@ -5,7 +5,7 @@ timezone: America/Sao_Paulo
 baseurl: ""
 # cole aqui os dados do seu projeto Supabase (Project Settings > API)
 # sem eles os botoes de COMENTAR/DAR COMIDA ficam desligados, sem quebrar o site
-supabase_url: "https://supabase.com/dashboard/project/eirkledbhiduecpwjyct"
+supabase_url: "https://eirkledbhiduecpwjyct.supabase.co"
 supabase_anon_key: "sb_publishable_ajKAVzZx8P9MaYQiggL2eA_raAFfjB4"
 exclude: [README.md, supabase]
 collections:
