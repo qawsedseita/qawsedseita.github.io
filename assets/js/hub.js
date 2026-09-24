@@ -31,13 +31,14 @@ function bixo(i,eu){
   L.forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';d.appendChild(m)});
   return d}
 var el=document.getElementById('povo');if(!el)return;
-var id=parseInt(S.qaw_id)||0,API='https://api.counterapi.dev/v1/qawsedhub/visitantes/';
-function draw(n){
-  var c=document.getElementById('povo-n');if(c)c.textContent=n+' PESSOAS VIRAM';
+var id=parseInt(S.qaw_id)||0,N=parseInt(S.qaw_n)||0,K='qawsedseita.github.io/visitantes';
+function draw(n,aviso){
+  var c=document.getElementById('povo-n');if(c)c.textContent=aviso||(n+' PESSOAS VIRAM');
   if(id&&id<n-59)el.appendChild(bixo(id,true));
   for(var i=Math.max(1,n-59);i<=n;i++)el.appendChild(bixo(i,i===id))}
-fetch(API+(id?'':'up')).then(function(r){return r.json()}).then(function(j){
-  var n=parseInt(j.count!=null?j.count:j.value);if(!n)throw 0;
-  if(!id){id=n;S.qaw_id=id}draw(n)
-}).catch(function(){if(id)draw(id)});
+/* pessoa nova: /hit soma 1 e devolve o numero dela; quem ja veio: /get so le o total */
+fetch('https://abacus.jasoncameron.dev/'+(id?'get/':'hit/')+K).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+  var n=parseInt(j.value);if(!n)throw 0;
+  if(!id){id=n;S.qaw_id=id}S.qaw_n=n;draw(n)
+}).catch(function(){draw(Math.max(N,id,1),'CONTADOR FORA DO AR')});
 })();
