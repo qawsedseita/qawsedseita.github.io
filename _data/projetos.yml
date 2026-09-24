@@ -1,6 +1,4 @@
 grupos:
-  - grupo: "Grupo de exemplo"
-    descricao: "Sobre o que é este grupo."
-    projetos:
-      - titulo: "Projeto 1"
-        texto: "Descrição do projeto."
+  - grupo: Mods
+    descricao: Bem óbvio.
+    projetos: []
