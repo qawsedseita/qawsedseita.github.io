@@ -1,6 +1,13 @@
-# Sem acento e sem ?, a fonte VHS só tem letras maiúsculas.
-# Para marcar, escreva o nome do sentimento em "marcados" (igual está em "humores").
-humores: [triste, feliz, doente, nao sei dizer, deprimido, raiva]
-marcados: [feliz]
-pergunta_opcoes: [sim, nao, quero, tou pensando sobre isso, nunca]
-pergunta_marcada: nao
+humores:
+  - {nome: triste, marcado: false}
+  - {nome: feliz, marcado: true}
+  - {nome: doente, marcado: false}
+  - {nome: nao sei dizer, marcado: false}
+  - {nome: deprimido, marcado: false}
+  - {nome: raiva, marcado: false}
+suicidio:
+  - {nome: sim, marcado: false}
+  - {nome: nao, marcado: true}
+  - {nome: quero, marcado: false}
+  - {nome: tou pensando sobre isso, marcado: false}
+  - {nome: nunca, marcado: false}

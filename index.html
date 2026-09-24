@@ -12,7 +12,7 @@ title: QawsedHub
 <p class="titulo grande">Este blog foi criado apenas para compartilhar algumas coisas minhas.</p>
 
 <h2 class="sigil big">QAWNEWS</h2>
-{% for n in site.data.qawnews %}
+{% assign ns = site.data.qawnews.noticias | sort: 'data' | reverse %}{% for n in ns %}
 <article class="news">
   <span class="vhs">{{ n.data | date: "%d/%m/%Y" }} · {% if n.tipo == 'boa' %}BOA NOVA{% else %}MA NOTICIA{% endif %}</span>
   <p>{{ n.texto }}</p>
@@ -22,12 +22,12 @@ title: QawsedHub
 <h2 class="sigil big">QAWSED ESTA</h2>
 <div class="status">
   <ul class="checks">
-  {% for h in site.data.status.humores %}<li class="vhs"><span class="cx {% if site.data.status.marcados contains h %}on{% endif %}"></span>{{ h }}</li>
+  {% for h in site.data.status.humores %}<li class="vhs"><span class="cx {% if h.marcado %}on{% endif %}"></span>{{ h.nome }}</li>
   {% endfor %}</ul>
   <div>
     <p class="vhs pergunta">SUICIDIO HOJE?</p>
     <ul class="checks">
-    {% for o in site.data.status.pergunta_opcoes %}<li class="vhs"><span class="cx {% if site.data.status.pergunta_marcada == o %}on{% endif %}"></span>{{ o }}</li>
+    {% for o in site.data.status.suicidio %}<li class="vhs"><span class="cx {% if o.marcado %}on{% endif %}"></span>{{ o.nome }}</li>
     {% endfor %}</ul>
   </div>
 </div>

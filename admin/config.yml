@@ -1,0 +1,109 @@
+backend:
+  name: github
+  repo: qawsedseita/qawsedseita.github.io
+  branch: main
+locale: pt
+media_folder: /assets/img
+public_folder: /assets/img
+collections:
+  - name: sonhos
+    label: Sonhos
+    folder: _sonhos
+    create: true
+    extension: md
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: Título, name: title, widget: string}
+      - {label: Data, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD"}
+      - {label: Sonho, name: body, widget: markdown}
+  - name: hub
+    label: Página inicial
+    files:
+      - name: status
+        label: "QAWSED ESTÁ (checks)"
+        file: _data/status.yml
+        fields:
+          - label: Sentimentos
+            name: humores
+            widget: list
+            summary: "{{fields.nome}}"
+            fields:
+              - {label: Nome (maiúsculas, sem acento), name: nome, widget: string}
+              - {label: Marcado, name: marcado, widget: boolean, default: false}
+          - label: Suicídio hoje?
+            name: suicidio
+            widget: list
+            summary: "{{fields.nome}}"
+            fields:
+              - {label: Nome (sem acento), name: nome, widget: string}
+              - {label: Marcado, name: marcado, widget: boolean, default: false}
+      - name: qawnews
+        label: QawNews
+        file: _data/qawnews.yml
+        fields:
+          - label: Notícias
+            name: noticias
+            widget: list
+            summary: "{{fields.data}} · {{fields.texto}}"
+            fields:
+              - {label: Data, name: data, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD"}
+              - {label: Tipo, name: tipo, widget: select, options: [boa, ruim]}
+              - {label: Texto, name: texto, widget: text}
+  - name: paginas
+    label: Outras páginas
+    files:
+      - name: musicas
+        label: Músicas
+        file: _data/musicas.yml
+        fields:
+          - label: Faixas (mp3)
+            name: faixas
+            widget: list
+            required: false
+            summary: "{{fields.titulo}}"
+            fields:
+              - {label: Título, name: titulo, widget: string}
+              - {label: Arquivo mp3, name: arquivo, widget: file, media_folder: /assets/audio, public_folder: /assets/audio}
+              - {label: Comentário (opcional), name: comentario, widget: text, required: false}
+          - label: Playlists do SoundCloud
+            name: playlists_soundcloud
+            widget: list
+            required: false
+            summary: "{{fields.titulo}}"
+            fields:
+              - {label: Título, name: titulo, widget: string}
+              - {label: Link da playlist, name: url, widget: string}
+              - {label: Comentário (opcional), name: comentario, widget: text, required: false}
+      - name: projetos
+        label: Projetos
+        file: _data/projetos.yml
+        fields:
+          - label: Grupos
+            name: grupos
+            widget: list
+            summary: "{{fields.grupo}}"
+            fields:
+              - {label: Nome do grupo, name: grupo, widget: string}
+              - {label: Descrição, name: descricao, widget: text, required: false}
+              - label: Projetos
+                name: projetos
+                widget: list
+                required: false
+                summary: "{{fields.titulo}}"
+                fields:
+                  - {label: Título, name: titulo, widget: string}
+                  - {label: Texto, name: texto, widget: text}
+                  - {label: Imagem, name: imagem, widget: image, required: false}
+                  - {label: Link, name: link, widget: string, required: false}
+      - name: qawsedista
+        label: Teste do qawsedista
+        file: _data/qawsedista.yml
+        fields:
+          - label: Perguntas
+            name: perguntas
+            widget: list
+            summary: "{{fields.texto}}"
+            fields:
+              - {label: Pergunta, name: texto, widget: string}
+              - {label: Opções, name: opcoes, widget: list}
+          - {label: Funções possíveis, name: funcoes, widget: list}

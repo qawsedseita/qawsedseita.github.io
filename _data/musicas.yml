@@ -1,10 +1,2 @@
-# Coloque os mp3 em assets/audio/ e escreva o nome do arquivo em "arquivo".
-# "comentario" é opcional (pode apagar a linha).
-faixas:
-  # - titulo: "Nome da música"
-  #   arquivo: "musica.mp3"
-  #   comentario: "Fiz isso numa madrugada."
-playlists_soundcloud:
-  # - titulo: "Minha playlist"
-  #   url: "https://soundcloud.com/usuario/sets/nome-da-playlist"
-  #   comentario: "opcional"
+faixas: []
+playlists_soundcloud: []

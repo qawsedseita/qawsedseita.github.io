@@ -13,7 +13,7 @@ permalink: /musicas/
 {% for f in site.data.musicas.faixas %}
 <section class="faixa">
   <h2>{{ f.titulo }}</h2>
-  <audio controls preload="none" src="{{ '/assets/audio/' | append: f.arquivo | relative_url }}"></audio>
+  <audio controls preload="none" src="{{ f.arquivo | relative_url }}"></audio>
   {% if f.comentario %}<p>{{ f.comentario }}</p>{% endif %}
 </section>
 {% endfor %}
