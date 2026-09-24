@@ -1,13 +1,24 @@
 humores:
-  - {nome: triste, marcado: false}
-  - {nome: feliz, marcado: true}
-  - {nome: doente, marcado: false}
-  - {nome: nao sei dizer, marcado: false}
-  - {nome: deprimido, marcado: false}
-  - {nome: raiva, marcado: false}
+  - nome: triste
+    marcado: false
+  - nome: feliz
+    marcado: false
+  - nome: doente
+    marcado: false
+  - nome: nao sei dizer
+    marcado: false
+  - nome: deprimido
+    marcado: true
+  - nome: raiva
+    marcado: false
 suicidio:
-  - {nome: sim, marcado: false}
-  - {nome: nao, marcado: true}
-  - {nome: quero, marcado: false}
-  - {nome: tou pensando sobre isso, marcado: false}
-  - {nome: nunca, marcado: false}
+  - nome: sim
+    marcado: false
+  - nome: nao
+    marcado: false
+  - nome: quero
+    marcado: false
+  - nome: tou pensando sobre isso
+    marcado: true
+  - nome: nunca
+    marcado: false
