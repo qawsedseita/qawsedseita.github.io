@@ -3,12 +3,17 @@ layout: pagina
 title: Cliquer do Qawsed
 permalink: /clicker/
 ---
-<p class="titulo">clica no cubo. o "leite" aqui sao os bixin: quanto mais voce clica, mais bixin aparece no rebanho, cada um com o colar de uma cor diferente.</p>
+<script>window.QAWSED_FAIXA={src:"{{ '/assets/audio/a-beautiful-day.mp3' | relative_url }}",chave:"abd",titulo:"A Beautiful Day"};</script>
 
-<p class="vhs cliques-n"><span id="cliques">0</span> CLIQUES</p>
+<p class="titulo">clica no cubo. o "leite" aqui sao os bixin: quanto mais voce clica, mais bixin aparece no rebanho, cada um com o colar de uma cor diferente.</p>
+<p class="nota-cliquer">esse cliquer foi inspirado no <b>Cookie Clicker</b>. a trilha que toca aqui é só dele: <b>A Beautiful Day</b>, em loop — nas outras páginas do site toca outra música.</p>
+
+<p class="vhs cliques-n"><span id="cliques">0</span> CLIQUES<span class="cps" id="cps"></span></p>
+
+<div class="combo-barra" id="combo-barra" hidden><div class="combo-preenche" id="combo-preenche"></div></div>
 
 <div class="cubo-cena">
-  <div class="cubo-wrap" id="cubo-wrap">
+  <div class="cubo-wrap" id="cubo-wrap" tabindex="0" role="button" aria-label="Clicar no cubo">
     <div class="cubo" id="cubo">
       <div class="face frente"></div>
       <div class="face tras"></div>
@@ -17,10 +22,15 @@ permalink: /clicker/
       <div class="face cima"></div>
       <div class="face baixo"></div>
     </div>
+    <div class="flutuantes" id="flutuantes"></div>
   </div>
 </div>
 
+<p class="auto-nota" id="auto-nota" hidden></p>
+
 <h2 class="sigil big">REBANHO</h2>
 <div id="rebanho" class="povo"></div>
+
+<div class="transicao-vhs" id="transicao-vhs" aria-hidden="true"></div>
 
 <script src="{{ '/assets/js/clicker.js' | relative_url }}" data-base="{{ '/' | relative_url }}" defer></script>

@@ -3,15 +3,17 @@ var B=document.currentScript.dataset.base||'/',S=window.localStorage;
 var SBU=document.currentScript.dataset.sbUrl,SBK=document.currentScript.dataset.sbKey;
 var sb=(SBU&&SBK&&window.supabase)?window.supabase.createClient(SBU,SBK):null;
 if(!sb)console.info('QAWSED: comentarios/comida desligados (falta data-sb-url/data-sb-key ou lib do supabase)');
-/* ---- MUSICA: toca a faixa inteira em loop normal, sem corte ---- */
-var au=new Audio(B+'assets/audio/vhs.mp3');au.loop=true;au.volume=.5;au.currentTime=parseFloat(S.mt)||0;
+/* ---- MUSICA: toca a faixa inteira em loop normal, sem corte. paginas podem trocar a faixa com window.QAWSED_FAIXA={src,chave,titulo} ---- */
+var faixa=window.QAWSED_FAIXA,chaveTempo='mt'+(faixa&&faixa.chave?'_'+faixa.chave:'');
+var au=new Audio(faixa&&faixa.src?faixa.src:B+'assets/audio/vhs.mp3');au.loop=true;au.volume=.5;
+try{au.currentTime=parseFloat(S[chaveTempo])||0}catch(e){}
 var b=document.createElement('button');b.className='tag musica';document.body.appendChild(b);
-function lab(){b.textContent=au.paused?'MUSICA: OFF':'MUSICA: ON'}lab();
+function lab(){b.textContent=(au.paused?'MUSICA: OFF':'MUSICA: ON')+(faixa&&faixa.titulo?' · '+faixa.titulo.toUpperCase():'')}lab();
 au.addEventListener('play',lab);au.addEventListener('pause',lab);
 function tocar(){au.play().then(function(){S.mus='1'}).catch(function(){})}
 function parar(){au.pause();S.mus='0'}
 b.onclick=function(){au.paused?tocar():parar()};
-function salva(){S.mt=au.currentTime}
+function salva(){try{S[chaveTempo]=au.currentTime}catch(e){}}
 setInterval(salva,1000);addEventListener('pagehide',salva);
 if(S.mus!=='0'){tocar();document.addEventListener('click',function(){if(au.paused&&S.mus!=='0')tocar()},{once:true})}
 /* ---- POVO: um bixinho por pessoa que viu, andando solto ---- */
