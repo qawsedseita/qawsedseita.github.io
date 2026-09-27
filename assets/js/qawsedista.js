@@ -4,6 +4,19 @@ var el=document.getElementById('entrevista');
 var vhs=document.getElementById('transicao-vhs');
 if(!el)return;
 
+function pegarSB(){return window.QAWSED_SB||null}
+function esperarSB(cb,tentativas){
+  tentativas=tentativas||0;
+  var sb=pegarSB();
+  if(sb){cb(sb);return}
+  if(!sb&&tentativas>25)return; /* uns 5s tentando, depois desiste (supabase mesmo desligado) */
+  setTimeout(function(){esperarSB(cb,tentativas+1)},200);
+}
+function pegarVisitorId(){
+  try{var v=parseInt(localStorage.qaw_id);if(v)return v}catch(e){}
+  return Math.floor(Math.random()*1e9);
+}
+
 /* transicao (reaproveita a mesma transicao VHS do resto do site) */
 function wipe(cb){
   if(vhs){vhs.classList.remove('jogar');void vhs.offsetWidth;vhs.classList.add('jogar')}
@@ -28,7 +41,10 @@ function tentarCodigo(v){
   var t=null;
   function comeca(){t=setTimeout(function(){
     var r=prompt('codigo:');
-    if(tentarCodigo(r)&&typeof atualizarVeredito==='function')atualizarVeredito();
+    if(tentarCodigo(r)){
+      montarPainelDono();
+      if(typeof atualizarVeredito==='function')atualizarVeredito();
+    }
   },900)}
   function cancela(){clearTimeout(t)}
   alvo.addEventListener('pointerdown',comeca);
@@ -177,13 +193,43 @@ function iniciarChat(){
   setTimeout(prox,400);
 }
 
-/* ---- STAGE 5: veredito (so o dono ve o botao) ---- */
-var vereditoWrap=null,decidido=null;
+/* ---- STAGE 5: veredito ----
+   se o supabase estiver configurado, a candidatura vai pro banco e a decisao
+   pode vir de outro aparelho (o do dono), em tempo real.
+   se nao estiver configurado, cai no modo antigo: so decide quem estiver
+   no mesmo aparelho e souber o codigo. */
+var vereditoWrap=null,decidido=null,modoRemoto=false,candidaturaId=null;
 function renderVeredito(){
   el.innerHTML='';
   vereditoWrap=document.createElement('div');vereditoWrap.className='veredito';
   el.appendChild(vereditoWrap);
-  atualizarVeredito();
+  var sb=pegarSB();
+  if(sb){
+    modoRemoto=true;
+    vereditoWrap.innerHTML='<p class="veredito-espera">enviando pro qawsed...</p>';
+    sb.from('candidaturas').insert({visitor_id:pegarVisitorId(),status:'pendente'}).select().single().then(function(r){
+      if(r.error||!r.data){modoRemoto=false;atualizarVeredito();return}
+      candidaturaId=r.data.id;
+      escutarCandidatura();
+      atualizarVeredito();
+    }).catch(function(){modoRemoto=false;atualizarVeredito()});
+  }else{
+    atualizarVeredito();
+  }
+}
+function escutarCandidatura(){
+  var sb=pegarSB();if(!sb||!candidaturaId)return;
+  sb.channel('candidatura-'+candidaturaId).on('postgres_changes',
+    {event:'UPDATE',schema:'public',table:'candidaturas',filter:'id=eq.'+candidaturaId},
+    function(p){if(p.new&&p.new.status&&p.new.status!=='pendente'){decidido=p.new.status;wipe(atualizarVeredito)}}
+  ).subscribe();
+  var tentativas=0,poll=setInterval(function(){
+    tentativas++;
+    if(decidido||tentativas>150){clearInterval(poll);return} /* poll de reserva, ~10min, caso o realtime falhe */
+    sb.from('candidaturas').select('status').eq('id',candidaturaId).single().then(function(r){
+      if(r.data&&r.data.status&&r.data.status!=='pendente'){decidido=r.data.status;clearInterval(poll);wipe(atualizarVeredito)}
+    });
+  },4000);
 }
 function atualizarVeredito(){
   if(!vereditoWrap)return;
@@ -192,6 +238,10 @@ function atualizarVeredito(){
     var v=(D.veredito||{})[decidido]||{};
     var h=document.createElement('h2');h.className='sigil';h.textContent=v.titulo||'';vereditoWrap.appendChild(h);
     var p=document.createElement('p');p.textContent=v.texto||'';vereditoWrap.appendChild(p);
+    return;
+  }
+  if(modoRemoto){
+    var esp=document.createElement('p');esp.className='veredito-espera';esp.textContent='o qawsed esta decidindo...';vereditoWrap.appendChild(esp);
     return;
   }
   if(ehDono()){
@@ -204,9 +254,43 @@ function atualizarVeredito(){
     botoes.appendChild(ac);botoes.appendChild(ng);
     vereditoWrap.appendChild(botoes);
   }else{
-    var esp=document.createElement('p');esp.className='veredito-espera';esp.textContent='o qawsed esta decidindo...';vereditoWrap.appendChild(esp);
+    var esp2=document.createElement('p');esp2.className='veredito-espera';esp2.textContent='o qawsed esta decidindo...';vereditoWrap.appendChild(esp2);
   }
 }
 
+/* ---- PAINEL DO DONO: lista quem esta esperando decisao, em qualquer aparelho ---- */
+var painelEl=null;
+function montarPainelDono(){
+  if(painelEl)return;
+  esperarSB(function(sb){
+    painelEl=document.createElement('div');painelEl.className='painel-dono';
+    painelEl.innerHTML='<h3 class="vhs">candidaturas pendentes</h3><div class="lista-candidaturas"></div>';
+    document.body.appendChild(painelEl);
+    var lista=painelEl.querySelector('.lista-candidaturas');
+    function decidirRemoto(id,status){sb.from('candidaturas').update({status:status}).eq('id',id).then(function(){})}
+    function renderLista(items){
+      lista.innerHTML='';
+      if(!items.length){var v=document.createElement('p');v.className='vazio';v.textContent='ninguem esperando.';lista.appendChild(v);return}
+      items.forEach(function(row){
+        var d=document.createElement('div');d.className='candidatura';
+        var t=document.createElement('p');t.textContent='visitante #'+row.visitor_id;d.appendChild(t);
+        var b=document.createElement('div');b.className='botoes';
+        var ac=document.createElement('button');ac.className='tag';ac.textContent='ACEITAR';
+        ac.onclick=function(){ac.disabled=true;ng.disabled=true;decidirRemoto(row.id,'aceito')};
+        var ng=document.createElement('button');ng.className='tag';ng.textContent='NEGAR';
+        ng.onclick=function(){ac.disabled=true;ng.disabled=true;decidirRemoto(row.id,'negado')};
+        b.appendChild(ac);b.appendChild(ng);d.appendChild(b);
+        lista.appendChild(d);
+      });
+    }
+    function carregar(){
+      sb.from('candidaturas').select('id,visitor_id,criado_em').eq('status','pendente').order('criado_em',{ascending:true}).then(function(r){renderLista(r.data||[])});
+    }
+    carregar();
+    sb.channel('painel-dono').on('postgres_changes',{event:'*',schema:'public',table:'candidaturas'},function(){carregar()}).subscribe();
+  });
+}
+
 mostrarIntro();
+if(ehDono())esperarSB(function(){montarPainelDono()});
 })();

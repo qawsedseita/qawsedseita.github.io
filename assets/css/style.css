@@ -157,3 +157,13 @@ body.escuro main img{filter:invert(1) grayscale(1) contrast(1000%)}
 .veredito-botoes .tag{font-size:1rem;padding:.5em 1em}
 .veredito-resultado h2{margin:.2em 0 .3em}
 .veredito-resultado p{max-width:440px;margin:0 auto;line-height:1.5}
+
+/* PAINEL DO DONO (lista de candidaturas pendentes, flutuante) */
+.painel-dono{position:fixed;left:10px;bottom:10px;z-index:1000;width:220px;max-height:50vh;overflow-y:auto;background:var(--fundo);color:var(--texto);border:2px solid var(--texto);padding:.5em .6em;font-size:.72rem}
+.painel-dono h3{margin:0 0 .4em;font-size:.7rem;opacity:.8}
+.painel-dono .candidatura{border-top:1px solid var(--texto);padding:.4em 0}
+.painel-dono .candidatura:first-child{border-top:0}
+.painel-dono .candidatura p{margin:0 0 .3em}
+.painel-dono .botoes{display:flex;gap:6px}
+.painel-dono .botoes .tag{font-size:.62rem;padding:.15em .4em}
+.painel-dono .vazio{opacity:.6;margin:0}

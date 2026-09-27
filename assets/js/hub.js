@@ -2,6 +2,7 @@
 var B=document.currentScript.dataset.base||'/',S=window.localStorage;
 var SBU=document.currentScript.dataset.sbUrl,SBK=document.currentScript.dataset.sbKey;
 var sb=(SBU&&SBK&&window.supabase)?window.supabase.createClient(SBU,SBK):null;
+window.QAWSED_SB=sb;
 if(!sb)console.info('QAWSED: comentarios/comida desligados (falta data-sb-url/data-sb-key ou lib do supabase)');
 /* ---- MUSICA: toca a faixa inteira em loop normal, sem corte. paginas podem trocar a faixa com window.QAWSED_FAIXA={src,chave,titulo} ---- */
 var faixa=window.QAWSED_FAIXA,chaveTempo='mt'+(faixa&&faixa.chave?'_'+faixa.chave:'');
