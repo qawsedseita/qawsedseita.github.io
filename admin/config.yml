@@ -114,9 +114,13 @@ collections:
                   - {label: Imagem, name: imagem, widget: image, required: false}
                   - {label: Link, name: link, widget: string, required: false}
       - name: qawsedista
-        label: Teste do qawsedista
+        label: Entrevista do qawsedista
         file: _data/qawsedista.yml
         fields:
+          - {label: "Código secreto (revela o botão de aceitar/negar pra você)", name: codigo_dono, widget: string}
+          - label: Intro (uma linha por vez, tela escura antes de começar)
+            name: intro
+            widget: list
           - label: Perguntas
             name: perguntas
             widget: list
@@ -124,4 +128,31 @@ collections:
             fields:
               - {label: Pergunta, name: texto, widget: string}
               - {label: Opções, name: opcoes, widget: list}
-          - {label: Funções possíveis, name: funcoes, widget: list}
+          - label: Desafios
+            name: desafios
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - {label: Tipo, name: tipo, widget: select, options: [reacao, memoria, segurar]}
+              - {label: Nome mostrado, name: label, widget: string}
+              - {label: Instrução, name: instrucao, widget: text}
+              - {label: "Duração em segundos (só usado no tipo 'segurar')", name: duracao, widget: number, required: false, default: 5}
+          - label: Falas do Qawsed no chat final (uma por vez)
+            name: chat
+            widget: list
+          - label: Veredito
+            name: veredito
+            widget: object
+            fields:
+              - label: Se aceito
+                name: aceito
+                widget: object
+                fields:
+                  - {label: Título, name: titulo, widget: string}
+                  - {label: Texto, name: texto, widget: text}
+              - label: Se negado
+                name: negado
+                widget: object
+                fields:
+                  - {label: Título, name: titulo, widget: string}
+                  - {label: Texto, name: texto, widget: text}

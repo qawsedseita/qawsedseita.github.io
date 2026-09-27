@@ -44,7 +44,6 @@ audio{width:100%}
 .grupo{margin:1.5em 0}.grupo summary{cursor:pointer;display:list-item}
 .card{padding-left:12px;border-left:2px solid #000}
 .lista{list-style:none;padding:0}.lista li{margin:.6em 0}
-#q button{display:block;margin:.5em 0;font-size:1.1rem;padding:.2em .6em}
 footer{margin-top:56px;font-size:.8rem;opacity:.7}.pequeno{font-size:.7rem}
 /* PERSONAGENS (todos 128x128) e MÚSICA */
 .musica{position:fixed;right:10px;bottom:10px;z-index:9;padding:.2em .6em;font-size:.8rem}
@@ -62,24 +61,6 @@ body{overflow-x:hidden}
 .bixo .q{position:relative;width:48px;height:96px}
 .bixo img{position:absolute;left:0;top:0;width:48px;height:96px;image-rendering:pixelated}
 .voce{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:.6rem;white-space:nowrap}
-/* CLICKER: cubo 3D so em preto e branco, sem cinza nenhum */
-.cliques-n{font-size:clamp(2.2rem,10vw,3.6rem);margin:.1em 0 .3em}
-.cubo-cena{display:flex;justify-content:center;margin:1.2em 0 2em}
-.cubo-wrap{width:180px;height:180px;perspective:700px}
-.cubo{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-24deg) rotateY(35deg)}
-.cubo .face{position:absolute;width:180px;height:180px;background:#fff;border:5px solid #000}
-.cubo .face:before{content:'';position:absolute;inset:16px;border:3px solid #000}
-.cubo .frente{transform:translateZ(90px);background:#000}
-.cubo .frente:before{border-color:#fff}
-.cubo .tras{transform:rotateY(180deg) translateZ(90px)}
-.cubo .direita{transform:rotateY(90deg) translateZ(90px);background:#000}
-.cubo .direita:before{border-color:#fff}
-.cubo .esquerda{transform:rotateY(-90deg) translateZ(90px)}
-.cubo .cima{transform:rotateX(90deg) translateZ(90px);background:#000}
-.cubo .cima:before{border-color:#fff}
-.cubo .baixo{transform:rotateX(-90deg) translateZ(90px)}
-.cubo.pulso{animation:pulso .22s ease}
-@keyframes pulso{0%{filter:none}40%{filter:invert(1)}100%{filter:none}}
 .tag:disabled{opacity:.4;cursor:default}
 /* BALAO DE FALA (aparece em cima do bixinho quando ele comenta) */
 .balao{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:8px;background:#fff;border:2px solid #000;padding:.25em .5em;font-size:.62rem;line-height:1.25;max-width:150px;white-space:normal;text-align:left;z-index:99}
@@ -97,17 +78,9 @@ body{overflow-x:hidden}
 .qawsed-ov.out{opacity:0}
 .qawsed-img{width:190px;height:auto;image-rendering:auto}
 .qawsed-tag{font-size:.7rem}
-/* CLIQUER 2.0: nota de credito, cps, combo, numeros flutuantes, marcos e transicao */
-.nota-cliquer{font-size:.85rem;opacity:.75;margin:.1em 0 1.1em}
-.cps{font-size:.5em;opacity:.6;vertical-align:middle}
-.cubo-wrap{position:relative}
-.cubo-wrap:focus-visible{outline:3px solid #000;outline-offset:6px}
+/* EFEITOS REUTILIZAVEIS (usados na entrevista de qawsedista): barra de progresso, marco/flash e transicao VHS */
 .combo-barra{width:180px;height:6px;margin:0 auto .8em;border:2px solid #000;background:#fff}
 .combo-preenche{height:100%;background:#000;width:0}
-.flutuantes{position:absolute;inset:0;pointer-events:none;overflow:visible}
-.flutuante{position:absolute;left:50%;top:38%;transform:translate(-50%,0);font-size:1.4rem;animation:subirFlutuante .9s ease-out forwards}
-@keyframes subirFlutuante{0%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-70px) scale(1.35)}}
-.auto-nota{font-size:.72rem;text-align:center;margin:.2em 0 0;opacity:.8}
 .marco-flash{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-size:clamp(1.6rem,7vw,2.6rem);background:#000;color:#fff;padding:.15em .4em;z-index:1002;pointer-events:none;animation:marcoPop 1.6s ease forwards}
 @keyframes marcoPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}20%{transform:translate(-50%,-50%) scale(1)}82%{opacity:1}100%{opacity:0}}
 .transicao-vhs{position:fixed;inset:0;z-index:1001;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,#000 0 4px,#fff 4px 8px)}
@@ -122,5 +95,65 @@ body{overflow-x:hidden}
   100%{opacity:0;clip-path:inset(0 0 0 100%)}
 }
 @media (prefers-reduced-motion: reduce){
-  .transicao-vhs,.marco-flash,.flutuante{animation:none!important;display:none!important}
+  .transicao-vhs,.marco-flash{animation:none!important;display:none!important}
 }
+
+/* CHAMADA PRA ENTREVISTA (destaque na home) */
+.chamada-seita{text-align:center;margin:2.4em 0;padding:1.6em 1em;border:3px solid var(--texto)}
+.chamada-seita p{margin:0 0 .2em}
+.chamada-seita .tag{display:inline-block;margin-top:.7em;font-size:1.1rem;padding:.5em 1.1em;animation:pulsaChamada 1.8s ease-in-out infinite}
+@keyframes pulsaChamada{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@media (prefers-reduced-motion: reduce){.chamada-seita .tag{animation:none}}
+
+/* TEMA ESCURO (usado so na pagina da entrevista) */
+body.escuro{--fundo:#050505;--texto:#f1f1f1}
+body.escuro .tag{background:#f1f1f1;color:#000}
+body.escuro .cx{border-color:#f1f1f1}
+body.escuro .cx.on{background:#f1f1f1}
+body.escuro .combo-barra{border-color:#f1f1f1;background:#050505}
+body.escuro .combo-preenche{background:#f1f1f1}
+body.escuro .marco-flash{background:#f1f1f1;color:#000}
+body.escuro main img{filter:invert(1) grayscale(1) contrast(1000%)}
+
+/* ENTREVISTA (qawsedista.html) */
+.entrevista{min-height:55vh;display:flex;flex-direction:column;justify-content:center}
+.entrevista .pergunta-n{margin:0 0 .3em;opacity:.7}
+.entrevista .pergunta-texto{font-size:1.15rem;margin:0 0 1em}
+.entrevista .opcoes{display:flex;flex-direction:column;gap:.5em}
+.entrevista .opcoes .tag{text-align:left;padding:.55em .7em;font-size:1rem}
+.entrevista-intro{text-align:center}
+.entrevista-intro p{margin:.6em 0}
+.entrevista-intro .tag{font-size:1.1rem;padding:.5em 1.2em;margin-top:.8em}
+
+/* DESAFIOS */
+.desafio{text-align:center}
+.desafio .desafio-nome{margin:0 0 .2em;opacity:.7}
+.desafio .instrucao{margin:0 auto 1.4em;max-width:420px;font-size:1.05rem}
+.sinal{width:120px;height:120px;margin:0 auto;border:3px solid var(--texto);display:flex;align-items:center;justify-content:center;font-size:2.4rem;user-select:none}
+.sinal.ativo{background:var(--texto);color:var(--fundo)}
+.memoria-simbolos{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin:1.4em 0}
+.memoria-simbolos button{width:64px;height:64px;font-size:1.7rem;border:3px solid var(--texto);background:var(--fundo);color:var(--texto);font-family:inherit}
+.memoria-simbolos button.mostrando{background:var(--texto);color:var(--fundo)}
+.memoria-simbolos button:disabled{opacity:.3}
+.segurar-botao{width:150px;height:150px;border-radius:50%;margin:1em auto;border:3px solid var(--texto);display:flex;align-items:center;justify-content:center;font-size:.95rem;text-align:center;padding:1em;background:var(--fundo);color:var(--texto);user-select:none}
+.segurar-botao.pressionando{background:var(--texto);color:var(--fundo)}
+.desafio-resultado{margin-top:1em;opacity:.8;font-size:.9rem}
+
+/* CHAT COM O QAWSED */
+.chat-qawsed{max-width:460px;margin:0 auto}
+.chat-cabecalho{text-align:center;margin-bottom:1.2em;opacity:.8}
+.chat-corpo{display:flex;flex-direction:column;min-height:120px}
+.balao-chat{max-width:82%;margin:.35em 0;padding:.55em .75em;border:2px solid var(--texto);font-size:.95rem;line-height:1.4;margin-right:auto}
+.digitando{display:inline-flex;gap:4px;padding:.6em .8em}
+.digitando span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--texto);animation:piscaDigita 1s infinite}
+.digitando span:nth-child(2){animation-delay:.15s}
+.digitando span:nth-child(3){animation-delay:.3s}
+@keyframes piscaDigita{0%,60%,100%{opacity:.25}30%{opacity:1}}
+
+/* VEREDITO */
+.veredito{text-align:center;margin-top:1.4em}
+.veredito-espera{opacity:.75}
+.veredito-botoes{display:flex;gap:10px;justify-content:center;margin-top:1em}
+.veredito-botoes .tag{font-size:1rem;padding:.5em 1em}
+.veredito-resultado h2{margin:.2em 0 .3em}
+.veredito-resultado p{max-width:440px;margin:0 auto;line-height:1.5}

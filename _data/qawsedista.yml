@@ -1,3 +1,9 @@
+codigo_dono: qsw
+intro:
+  - A luz se apaga assim que voce clica.
+  - isso nao e um teste. e uma entrevista. e so acontece uma vez.
+  - depois de comecar, nao tem "tentar de novo". o que voce responder, responder.
+  - no final eu mesmo vou te ver no chat. e so eu decido se voce fica.
 perguntas:
   - texto: Se voce estivesse andando a noite em uma rua deserta completamente sozinho(a) e faltasse luz nesse momento, como agiria?
     opcoes:
@@ -25,12 +31,34 @@ perguntas:
       - um corpo
       - dinheiro
       - objeto valioso
-funcoes:
-  - Porteiro
-  - Zelador
-  - Empregado doméstico(a)
-  - Jahwyya's Hwveyd.
-  - Plebeu
-  - Zé ninguém
-  - Palhaço
-  - Seguidor, Aleluia
+desafios:
+  - tipo: reacao
+    label: O SINAL
+    instrucao: quando o quadrado ficar cheio, toque nele. se hesitar, ele ja era.
+  - tipo: memoria
+    label: A SEQUENCIA
+    instrucao: decore a ordem dos simbolos. depois repita, na mesma ordem. uma chance so.
+  - tipo: segurar
+    label: O PESO
+    instrucao: segure o simbolo sem soltar ate o fim. soltar antes e desistir.
+    duracao: 5
+chat:
+  - "..."
+  - eu vi tudo o que voce fez ai.
+  - cada resposta. cada hesitacao. cada vez que sua mao tremeu no sinal.
+  - agora eu preciso decidir uma coisa.
+  - voce fica, ou volta pra escuridao de onde veio.
+veredito:
+  aceito:
+    titulo: NOVO SANGUE
+    texto: >-
+      Novo Sangue... agora você faz parte do Qawsedismo, que os deuses Qã, Sûr e Wér
+      guardem seus passos, vigiem seu sono e nunca desviem o olhar de você. Seu nome
+      foi escrito no Rebanho. A porta que se fechou atrás de você não abre de novo —
+      mas agora você já está do lado de dentro. Bem-vindo(a), irmão(ã).
+  negado:
+    titulo: A PORTA CONTINUA FECHADA
+    texto: >-
+      Os deuses Qã, Sûr e Wér olharam pra você e não reconheceram nada ali. Não
+      hoje. A escuridão te devolve pra onde você veio, sem rancor — só sem lugar
+      pra você aqui dentro. Talvez numa outra vida.
