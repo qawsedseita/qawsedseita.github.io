@@ -1,4 +1,6 @@
--- Rode isto inteiro no SQL Editor do seu projeto Supabase (supabase.com > seu projeto > SQL Editor > New query)
+-- Rode isto INTEIRO no SQL Editor do seu projeto Supabase (supabase.com > seu projeto > SQL Editor > New query).
+-- Pode selecionar o arquivo inteiro e rodar de uma vez, mesmo que voce ja tenha rodado ele (ou partes dele)
+-- antes -- toda parte aqui embaixo checa se a coisa ja existe antes de criar, entao nao da erro de duplicado.
 
 create table if not exists comentarios (
   id bigint generated always as identity primary key,
@@ -18,18 +20,29 @@ alter table comentarios enable row level security;
 alter table comida_eventos enable row level security;
 
 -- qualquer visitante (chave anon) pode ler e inserir; ninguem pode editar/apagar pelo site
+drop policy if exists "leitura publica comentarios" on comentarios;
 create policy "leitura publica comentarios" on comentarios for select using (true);
+drop policy if exists "insercao publica comentarios" on comentarios;
 create policy "insercao publica comentarios" on comentarios for insert with check (true);
 
+drop policy if exists "leitura publica comida" on comida_eventos;
 create policy "leitura publica comida" on comida_eventos for select using (true);
+drop policy if exists "insercao publica comida" on comida_eventos;
 create policy "insercao publica comida" on comida_eventos for insert with check (true);
 
--- ativa o Realtime nas duas tabelas (pra todo mundo ver os comentarios/comida na hora)
-alter publication supabase_realtime add table comentarios, comida_eventos;
+-- ativa o Realtime nas tabelas (pra todo mundo ver na hora), so se ainda nao estiver ativado
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname='supabase_realtime' and tablename='comentarios') then
+    alter publication supabase_realtime add table comentarios;
+  end if;
+  if not exists (select 1 from pg_publication_tables where pubname='supabase_realtime' and tablename='comida_eventos') then
+    alter publication supabase_realtime add table comida_eventos;
+  end if;
+end $$;
 
 -- ============================================================
--- BLOCO NOVO (entrevista do qawsedista, decisao a distancia).
--- Se voce ja rodou o bloco acima antes, so precisa rodar DAQUI PRA BAIXO.
+-- BLOCO (entrevista do qawsedista, decisao a distancia).
 -- ============================================================
 
 create table if not exists candidaturas (
@@ -46,18 +59,25 @@ alter table candidaturas add column if not exists nome text;
 alter table candidaturas enable row level security;
 
 -- qualquer visitante pode criar sua candidatura e ler status (pra saber se foi aceito)
+drop policy if exists "leitura publica candidaturas" on candidaturas;
 create policy "leitura publica candidaturas" on candidaturas for select using (true);
+drop policy if exists "insercao publica candidaturas" on candidaturas;
 create policy "insercao publica candidaturas" on candidaturas for insert with check (true);
 -- so permite mudar de "pendente" pra "aceito"/"negado" (o codigo secreto no site e quem controla quem mexe nisso,
 -- mas tecnicamente, como o site e estatico, qualquer um com a anon key poderia chamar isso direto -- e um blog
 -- pessoal, nao um sistema com autenticacao de verdade, entao aceitamos esse risco baixo)
+drop policy if exists "atualizacao publica candidaturas" on candidaturas;
 create policy "atualizacao publica candidaturas" on candidaturas for update using (true) with check (status in ('aceito','negado'));
 
-alter publication supabase_realtime add table candidaturas;
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname='supabase_realtime' and tablename='candidaturas') then
+    alter publication supabase_realtime add table candidaturas;
+  end if;
+end $$;
 
 -- ============================================================
--- BLOCO NOVO (chat ao vivo entre voce e quem esta se candidatando).
--- Se voce ja rodou os blocos acima antes, so precisa rodar DAQUI PRA BAIXO.
+-- BLOCO (chat ao vivo entre voce e quem esta se candidatando).
 -- ============================================================
 
 create table if not exists mensagens_candidatura (
@@ -69,7 +89,14 @@ create table if not exists mensagens_candidatura (
 );
 
 alter table mensagens_candidatura enable row level security;
+drop policy if exists "leitura publica mensagens_candidatura" on mensagens_candidatura;
 create policy "leitura publica mensagens_candidatura" on mensagens_candidatura for select using (true);
+drop policy if exists "insercao publica mensagens_candidatura" on mensagens_candidatura;
 create policy "insercao publica mensagens_candidatura" on mensagens_candidatura for insert with check (true);
 
-alter publication supabase_realtime add table mensagens_candidatura;
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname='supabase_realtime' and tablename='mensagens_candidatura') then
+    alter publication supabase_realtime add table mensagens_candidatura;
+  end if;
+end $$;
