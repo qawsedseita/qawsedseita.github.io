@@ -17,21 +17,34 @@ b.onclick=function(){au.paused?tocar():parar()};
 function salva(){try{S[chaveTempo]=au.currentTime}catch(e){}}
 setInterval(salva,1000);addEventListener('pagehide',salva);
 if(S.mus!=='0'){tocar();document.addEventListener('click',function(){if(au.paused&&S.mus!=='0')tocar()},{once:true})}
-/* ---- POVO: um bixinho por pessoa que viu, andando solto ---- */
+/* ---- POVO: um bixinho por pessoa que viu, andando solto ----
+   cada bixinho tem: corpo + rosto (1 de 24) + talvez cabeca (1 de 3) + talvez colar (1 de 3)
+   + talvez acessorio de rosto (1 de 4) + talvez maquiagem, sorteado sempre igual pro mesmo #id.
+   quem ja foi aceito como qawsedista ganha o manto por cima de tudo, pra sempre. */
 function rnd(s){s=Math.sin(s*9301+49297)*233280;return s-Math.floor(s)}
+var aceitos={};                                                    /* visitor_id -> true, preenchido do banco quando da */
+function souAceito(){try{return localStorage.getItem('qaw_aceito')==='1'}catch(e){return false}}
+function camadasBixo(i,eu){
+  var L=['corpo','rosto'+(1+Math.floor(rnd(i*7+1)*24))];
+  if(rnd(i*3+5)>.5)L.push('cabeca'+(rnd(i*3+6)>.66?(rnd(i*3+7)>.5?'3':'2'):''));
+  if(rnd(i*5+9)>.5)L.push('colar'+(rnd(i*5+10)>.66?(rnd(i*5+11)>.5?'3':'2'):''));
+  if(rnd(i*13+2)>.72)L.push('acessorio'+(1+Math.floor(rnd(i*13+3)*4)));
+  if(rnd(i*17+4)>.83)L.push('maquiagem1');
+  if(aceitos[i]||(eu&&souAceito()))L.push('manto');
+  return L;
+}
 var el=document.getElementById('povo');if(!el)return;
 var W=48,H=96,bichos=[];
 function bixo(i,eu){
   var d=document.createElement('div'),q=document.createElement('div');d.className='bixo';q.className='q';d.title='#'+i;
-  var L=['corpo','rosto'+(1+Math.floor(rnd(i*7+1)*9))];
-  if(rnd(i*3+5)>.5)L.push('cabeca');if(rnd(i*5+9)>.5)L.push('colar');
-  L.forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)});
+  camadasBixo(i,eu).forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)});
   d.appendChild(q);
   if(eu){var t=document.createElement('span');t.className='tag voce';t.textContent='VOCE';d.appendChild(t)}
   el.appendChild(d);
   var x=rnd(i*11+3)*(el.clientWidth-W),y=rnd(i*13+7)*(el.clientHeight-H);
   bichos.push({d:d,q:q,x:x,y:y,tx:x,ty:y,esp:18+rnd(i*17+1)*22,par:rnd(i*19)*3,f:-1,i:i});
 }
+function refazBixo(b){var q=b.q;q.innerHTML='';camadasBixo(b.i,b.i===id).forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)})}
 var ult=performance.now(),comida=null;
 function anda(agora){
   var dt=Math.min((agora-ult)/1000,.1);ult=agora;
@@ -61,7 +74,9 @@ var id=parseInt(S.qaw_id)||0,N=parseInt(S.qaw_n)||0,K='qawsedseita.github.io/vis
 function draw(n,aviso){
   var c=document.getElementById('povo-n');if(c)c.textContent=aviso||(n+' PESSOAS VIRAM');
   if(id&&id<n-59)bixo(id,true);
-  for(var i=Math.max(1,n-59);i<=n;i++)bixo(i,i===id)}
+  for(var i=Math.max(1,n-59);i<=n;i++)bixo(i,i===id);
+  bichos.forEach(refazBixo); /* se a lista de aceitos ja chegou do banco antes disso, aplica o manto de cara */
+}
 /* pessoa nova: /hit soma 1 e devolve o numero dela; quem ja veio: /get so le o total */
 fetch('https://abacus.jasoncameron.dev/'+(id?'get/':'hit/')+K).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
   var n=parseInt(j.value);if(!n)throw 0;
@@ -102,6 +117,14 @@ function mostrarQawsed(){
   setTimeout(function(){ov.remove()},6100);
 }
 if(sb&&el){
+  /* quem ja foi aceito como qawsedista ganha o manto, pra todo mundo ver, em qualquer aparelho */
+  sb.from('candidaturas').select('visitor_id').eq('status','aceito').then(function(r){
+    (r.data||[]).forEach(function(row){aceitos[row.visitor_id]=true});
+    bichos.forEach(refazBixo);
+  });
+  sb.channel('aceitos-manto').on('postgres_changes',{event:'UPDATE',schema:'public',table:'candidaturas'},function(p){
+    if(p.new&&p.new.status==='aceito'){aceitos[p.new.visitor_id]=true;bichos.forEach(function(b){if(b.i==p.new.visitor_id)refazBixo(b)})}
+  }).subscribe();
   var TXT_MAX=140,NOME_MAX=30;
   var bc=document.createElement('button');bc.className='tag';bc.textContent='COMENTAR';
   bc.onclick=function(){

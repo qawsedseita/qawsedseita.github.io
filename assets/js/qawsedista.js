@@ -4,17 +4,49 @@ var el=document.getElementById('entrevista');
 var vhs=document.getElementById('transicao-vhs');
 if(!el)return;
 
+var BASE=(function(){try{var s=document.currentScript.src;var i=s.indexOf('assets/js/');return i>-1?s.slice(0,i):'/'}catch(e){return '/'}})();
+
 function pegarSB(){return window.QAWSED_SB||null}
-function esperarSB(cb,tentativas){
+/* espera o hub.js (carregado depois, por causa do "defer") ligar o supabase. so desiste de
+   verdade depois de uns 5s tentando -- ate la, nunca decide "local" so por pressa. */
+function esperarSB(cb,desiste,tentativas){
   tentativas=tentativas||0;
   var sb=pegarSB();
   if(sb){cb(sb);return}
-  if(!sb&&tentativas>25)return; /* uns 5s tentando, depois desiste (supabase mesmo desligado) */
-  setTimeout(function(){esperarSB(cb,tentativas+1)},200);
+  if(tentativas>25){if(desiste)desiste();return}
+  setTimeout(function(){esperarSB(cb,desiste,tentativas+1)},200);
 }
 function pegarVisitorId(){
   try{var v=parseInt(localStorage.qaw_id);if(v)return v}catch(e){}
   return Math.floor(Math.random()*1e9);
+}
+
+/* ---- BIXINHO: mesma logica de camadas do hub.js, so que parado e sozinho num avatar ---- */
+function rnd(s){s=Math.sin(s*9301+49297)*233280;return s-Math.floor(s)}
+function camadasBixo(i,manto){
+  var L=['corpo','rosto'+(1+Math.floor(rnd(i*7+1)*24))];
+  if(rnd(i*3+5)>.5)L.push('cabeca'+(rnd(i*3+6)>.66?(rnd(i*3+7)>.5?'3':'2'):''));
+  if(rnd(i*5+9)>.5)L.push('colar'+(rnd(i*5+10)>.66?(rnd(i*5+11)>.5?'3':'2'):''));
+  if(rnd(i*13+2)>.72)L.push('acessorio'+(1+Math.floor(rnd(i*13+3)*4)));
+  if(rnd(i*17+4)>.83)L.push('maquiagem1');
+  if(manto)L.push('manto');
+  return L;
+}
+function montarAvatar(i,manto,peq){
+  var d=document.createElement('div');d.className='avatar-bixo'+(peq?' peq':'');
+  var q=document.createElement('div');q.className='q';
+  camadasBixo(i,manto).forEach(function(n){var m=document.createElement('img');m.src=BASE+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)});
+  d.appendChild(q);
+  return d;
+}
+
+/* ---- NOME DO BIXIN: se ele nao tem nome ainda, ganha um agora, e fica pra sempre ---- */
+function pegarNomeBixin(){
+  try{var n=localStorage.qaw_nome_bixin;if(n)return n}catch(e){}
+  var pool=D.nomes_bixin&&D.nomes_bixin.length?D.nomes_bixin:['SEM-NOME'];
+  var n=pool[Math.floor(Math.random()*pool.length)]+'-'+(100+Math.floor(Math.random()*900));
+  try{localStorage.qaw_nome_bixin=n}catch(e){}
+  return n;
 }
 
 /* transicao (reaproveita a mesma transicao VHS do resto do site) */
@@ -24,7 +56,7 @@ function wipe(cb){
   setTimeout(function(){if(vhs)vhs.classList.remove('jogar')},950);
 }
 
-/* ---- MODO DONO: segredo pra revelar o botao de aceitar/negar ---- */
+/* ---- MODO DONO: segredo pra revelar o painel de quem esta esperando ---- */
 var DONO_KEY='qawsed_dono';
 function ehDono(){try{return localStorage.getItem(DONO_KEY)==='1'}catch(e){return false}}
 function tentarCodigo(v){
@@ -41,10 +73,7 @@ function tentarCodigo(v){
   var t=null;
   function comeca(){t=setTimeout(function(){
     var r=prompt('codigo:');
-    if(tentarCodigo(r)){
-      montarPainelDono();
-      if(typeof atualizarVeredito==='function')atualizarVeredito();
-    }
+    if(tentarCodigo(r))montarPainelDono();
   },900)}
   function cancela(){clearTimeout(t)}
   alvo.addEventListener('pointerdown',comeca);
@@ -171,7 +200,7 @@ function rodarSegurar(wrap,duracao,fim){
   btn.addEventListener('pointerleave',soltar);
 }
 
-/* ---- STAGE 4: chat com o qawsed ---- */
+/* ---- STAGE 4: monologo de abertura do qawsed (so narrativo, decora o clima antes da sala de verdade) ---- */
 function iniciarChat(){
   el.innerHTML='';
   var wrap=document.createElement('div');wrap.className='chat-qawsed';
@@ -180,7 +209,7 @@ function iniciarChat(){
   el.appendChild(wrap);
   var linhas=(D.chat||[]).slice();
   function prox(){
-    if(!linhas.length){setTimeout(function(){wipe(renderVeredito)},500);return}
+    if(!linhas.length){setTimeout(function(){wipe(iniciarJulgamento)},500);return}
     var msg=linhas.shift();
     var dig=document.createElement('div');dig.className='balao-chat digitando';dig.innerHTML='<span></span><span></span><span></span>';
     corpo.appendChild(dig);
@@ -193,104 +222,371 @@ function iniciarChat(){
   setTimeout(prox,400);
 }
 
-/* ---- STAGE 5: veredito ----
-   se o supabase estiver configurado, a candidatura vai pro banco e a decisao
-   pode vir de outro aparelho (o do dono), em tempo real.
-   se nao estiver configurado, cai no modo antigo: so decide quem estiver
-   no mesmo aparelho e souber o codigo. */
-var vereditoWrap=null,decidido=null,modoRemoto=false,candidaturaId=null;
-function renderVeredito(){
-  el.innerHTML='';
-  vereditoWrap=document.createElement('div');vereditoWrap.className='veredito';
-  el.appendChild(vereditoWrap);
-  var sb=pegarSB();
-  if(sb){
-    modoRemoto=true;
-    vereditoWrap.innerHTML='<p class="veredito-espera">enviando pro qawsed...</p>';
-    sb.from('candidaturas').insert({visitor_id:pegarVisitorId(),status:'pendente'}).select().single().then(function(r){
-      if(r.error||!r.data){modoRemoto=false;atualizarVeredito();return}
-      candidaturaId=r.data.id;
-      escutarCandidatura();
-      atualizarVeredito();
-    }).catch(function(){modoRemoto=false;atualizarVeredito()});
-  }else{
-    atualizarVeredito();
+/* ============================================================
+   FILA LOCAL: usada so quando o supabase nao esta configurado
+   nesse deploy. fica inteira no localStorage do proprio aparelho,
+   e tanto a tela do candidato quanto o painel do dono leem dessa
+   MESMA fonte -- entao nunca da de um lado dizer "ninguem esperando"
+   enquanto do outro lado tem alguem esperando de verdade.
+   ============================================================ */
+var FILA_KEY='qawsed_fila_local';
+function filaLer(){try{var v=JSON.parse(localStorage[FILA_KEY]||'[]');return v instanceof Array?v:[]}catch(e){return []}}
+function filaGravar(lista){try{localStorage[FILA_KEY]=JSON.stringify(lista)}catch(e){}}
+function filaAchar(id){var l=filaLer();for(var i=0;i<l.length;i++)if(l[i].id===id)return l[i];return null}
+function filaCriarOuAchar(visitorId,nome){
+  var id='local-'+visitorId,existente=filaAchar(id);
+  if(existente)return existente;
+  var lista=filaLer();
+  var nova={id:id,visitor_id:visitorId,nome:nome,status:'pendente',criado_em:Date.now(),mensagens:[]};
+  lista.push(nova);filaGravar(lista);disparaFila();
+  return nova;
+}
+function filaAtualizar(id,campos){
+  var lista=filaLer();
+  for(var i=0;i<lista.length;i++)if(lista[i].id===id){
+    for(var k in campos)lista[i][k]=campos[k];
+    filaGravar(lista);disparaFila();return lista[i];
+  }
+  return null;
+}
+function filaMensagem(id,autor,texto){
+  var lista=filaLer();
+  for(var i=0;i<lista.length;i++)if(lista[i].id===id){
+    lista[i].mensagens.push({autor:autor,texto:texto,criado_em:Date.now()});
+    filaGravar(lista);disparaFila();return;
   }
 }
-function escutarCandidatura(){
-  var sb=pegarSB();if(!sb||!candidaturaId)return;
-  sb.channel('candidatura-'+candidaturaId).on('postgres_changes',
-    {event:'UPDATE',schema:'public',table:'candidaturas',filter:'id=eq.'+candidaturaId},
-    function(p){if(p.new&&p.new.status&&p.new.status!=='pendente'){decidido=p.new.status;wipe(atualizarVeredito)}}
-  ).subscribe();
+var filaOuvintes=[];
+function disparaFila(){filaOuvintes.slice().forEach(function(f){f()})}
+window.addEventListener('storage',function(e){if(e.key===FILA_KEY)disparaFila()});
+
+/* ============================================================
+   REFERENCIA SALVA: pra nao precisar ficar com a aba aberta.
+   guarda so o id + o modo (remoto ou local). fechar e voltar
+   depois cai direto na sala de julgamento, sem repetir a entrevista.
+   ============================================================ */
+var REF_KEY='qaw_candidatura_ref';
+function lerRef(){try{return JSON.parse(localStorage[REF_KEY]||'null')}catch(e){return null}}
+function gravarRef(o){try{localStorage[REF_KEY]=JSON.stringify(o)}catch(e){}}
+function limparRef(){try{localStorage.removeItem(REF_KEY)}catch(e){}}
+
+/* ---- notificacao do navegador: avisa mesmo se a aba estiver so em segundo plano ---- */
+function pedirNotificacao(){
+  try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission()}catch(e){}
+}
+function notificar(titulo,corpo){
+  try{if('Notification' in window&&Notification.permission==='granted')new Notification(titulo,{body:corpo})}catch(e){}
+}
+
+/* ============================================================
+   STAGE 5: A SALA -- chat ao vivo entre voce e o dono.
+   ele pode decidir (sim ou nao) a qualquer momento, de qualquer
+   aparelho onde ele destrave o painel dele.
+   ============================================================ */
+var salaWrap=null,candidatura=null,modo=null,mensagens=[],vistas={},sb2=null;
+
+function iniciarJulgamento(){
+  var ref=lerRef();
+  if(ref){retomarJulgamento(ref);return}
+  var vid=pegarVisitorId(),nome=pegarNomeBixin();
+  desenharCasca();
+  function irLocal(){
+    modo='local';
+    candidatura=filaCriarOuAchar(vid,nome);
+    gravarRef({modo:'local',id:candidatura.id});
+    prepararLocal();
+  }
+  esperarSB(function(sb){
+    modo='remoto';sb2=sb;
+    criarCandidaturaRemota(sb,vid,nome,function(row,erro){
+      if(!row){irLocal();return}
+      candidatura=row;
+      gravarRef({modo:'remoto',id:row.id});
+      mensagens=[];vistas={};
+      prepararRemoto();
+    });
+  },irLocal);
+}
+
+function retomarJulgamento(ref){
+  modo=ref.modo;
+  desenharCasca();
+  if(modo==='remoto'){
+    esperarSB(function(sb){
+      sb2=sb;
+      sb.from('candidaturas').select('*').eq('id',ref.id).single().then(function(r){
+        if(!r.data){limparRef();mostrarIntro();return}
+        candidatura=r.data;mensagens=[];vistas={};
+        prepararRemoto();
+      });
+    },function(){
+      /* supabase sumiu de vez desse deploy: melhor recomecar do zero do que travar numa sala fantasma */
+      limparRef();mostrarIntro();
+    });
+  }else{
+    var achada=filaAchar(ref.id);
+    if(!achada){limparRef();mostrarIntro();return}
+    candidatura=achada;
+    prepararLocal();
+  }
+}
+
+function criarCandidaturaRemota(sb,visitorId,nome,cb){
+  var tentativas=0;
+  function tentar(){
+    tentativas++;
+    sb.from('candidaturas').insert({visitor_id:visitorId,nome:nome,status:'pendente'}).select().single().then(function(r){
+      if(r.error||!r.data){if(tentativas<5){setTimeout(tentar,1200*tentativas);return}cb(null,r.error);return}
+      cb(r.data);
+    }).catch(function(err){if(tentativas<5){setTimeout(tentar,1200*tentativas);return}cb(null,err)});
+  }
+  tentar();
+}
+
+function prepararRemoto(){
+  pedirNotificacao();
+  desenharSala();
+  sb2.from('mensagens_candidatura').select('*').eq('candidatura_id',candidatura.id).order('id',{ascending:true}).then(function(r){
+    (r.data||[]).forEach(function(m){if(!vistas[m.id]){vistas[m.id]=1;mensagens.push(m)}});
+    if(!mensagens.length)enviarMensagem('dono','...');
+    desenharSala();
+  });
+  sb2.channel('julgamento-'+candidatura.id)
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'candidaturas',filter:'id=eq.'+candidatura.id},function(p){
+      if(p.new&&p.new.status&&p.new.status!=='pendente')receberDecisao(p.new.status);
+    })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'mensagens_candidatura',filter:'candidatura_id=eq.'+candidatura.id},function(p){
+      receberMensagem(p.new);
+    })
+    .subscribe();
   var tentativas=0,poll=setInterval(function(){
     tentativas++;
-    if(decidido||tentativas>150){clearInterval(poll);return} /* poll de reserva, ~10min, caso o realtime falhe */
-    sb.from('candidaturas').select('status').eq('id',candidaturaId).single().then(function(r){
-      if(r.data&&r.data.status&&r.data.status!=='pendente'){decidido=r.data.status;clearInterval(poll);wipe(atualizarVeredito)}
+    if(candidatura.status!=='pendente'||tentativas>300){clearInterval(poll);return}
+    sb2.from('candidaturas').select('status').eq('id',candidatura.id).single().then(function(r){
+      if(r.data&&r.data.status&&r.data.status!=='pendente')receberDecisao(r.data.status);
+    });
+    var ultimoId=0;mensagens.forEach(function(m){if(m.id>ultimoId)ultimoId=m.id});
+    sb2.from('mensagens_candidatura').select('*').eq('candidatura_id',candidatura.id).gt('id',ultimoId).then(function(r){
+      (r.data||[]).forEach(receberMensagem);
     });
   },4000);
 }
-function atualizarVeredito(){
-  if(!vereditoWrap)return;
-  vereditoWrap.innerHTML='';
-  if(decidido){
-    var v=(D.veredito||{})[decidido]||{};
-    var h=document.createElement('h2');h.className='sigil';h.textContent=v.titulo||'';vereditoWrap.appendChild(h);
-    var p=document.createElement('p');p.textContent=v.texto||'';vereditoWrap.appendChild(p);
-    return;
-  }
-  if(modoRemoto){
-    var esp=document.createElement('p');esp.className='veredito-espera';esp.textContent='o qawsed esta decidindo...';vereditoWrap.appendChild(esp);
-    return;
-  }
-  if(ehDono()){
-    var pergunta=document.createElement('p');pergunta.className='veredito-espera';pergunta.textContent='so voce ve isso. e agora?';vereditoWrap.appendChild(pergunta);
-    var botoes=document.createElement('div');botoes.className='veredito-botoes';
-    var ac=document.createElement('button');ac.className='tag';ac.textContent='ACEITAR';
-    ac.onclick=function(){decidido='aceito';wipe(atualizarVeredito)};
-    var ng=document.createElement('button');ng.className='tag';ng.textContent='NEGAR';
-    ng.onclick=function(){decidido='negado';wipe(atualizarVeredito)};
-    botoes.appendChild(ac);botoes.appendChild(ng);
-    vereditoWrap.appendChild(botoes);
+
+function prepararLocal(){
+  pedirNotificacao();
+  if(!candidatura.mensagens.length)filaMensagem(candidatura.id,'dono','...');
+  filaOuvintes.push(function(){
+    var atual=filaAchar(candidatura.id);
+    if(!atual)return;
+    var statusVelho=candidatura.status;
+    candidatura=atual;
+    if(statusVelho==='pendente'&&atual.status!=='pendente')notificar('QAWSED','o veredito saiu.');
+    desenharSala();
+  });
+  desenharSala();
+}
+
+function receberDecisao(status){
+  if(candidatura.status==='pendente')notificar('QAWSED','o veredito saiu.');
+  candidatura.status=status;
+  desenharSala();
+}
+function receberMensagem(m){
+  if(vistas[m.id])return;
+  vistas[m.id]=1;mensagens.push(m);
+  if(m.autor==='dono'&&document.hidden)notificar(pegarNomeBixin(),m.texto);
+  desenharSala();
+}
+
+function enviarMensagem(autor,texto){
+  texto=(texto||'').trim().slice(0,300);
+  if(!texto)return;
+  if(modo==='remoto'){
+    sb2.from('mensagens_candidatura').insert({candidatura_id:candidatura.id,autor:autor,texto:texto}).then(function(){});
   }else{
-    var esp2=document.createElement('p');esp2.className='veredito-espera';esp2.textContent='o qawsed esta decidindo...';vereditoWrap.appendChild(esp2);
+    filaMensagem(candidatura.id,autor,texto);
   }
 }
 
-/* ---- PAINEL DO DONO: lista quem esta esperando decisao, em qualquer aparelho ---- */
+function desenharCasca(){
+  el.innerHTML='';
+  salaWrap=document.createElement('div');salaWrap.className='sala-julgamento';
+  var esp=document.createElement('p');esp.className='veredito-espera';esp.textContent='entrando na sala...';
+  salaWrap.appendChild(esp);
+  el.appendChild(salaWrap);
+}
+
+function copiarNumero(txt,btn){
+  var ok=function(){btn.textContent='COPIADO';setTimeout(function(){btn.textContent='COPIAR NUMERO'},1600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok).catch(function(){prompt('seu numero:',txt)});
+  else prompt('seu numero:',txt);
+}
+
+function desenharSala(){
+  if(!salaWrap)return;
+  salaWrap.innerHTML='';
+  var vid=candidatura.visitor_id;
+
+  var cab=document.createElement('div');cab.className='sala-cabecalho';
+  cab.appendChild(montarAvatar(vid,candidatura.status==='aceito',false));
+  var textos=document.createElement('div');
+  var nomeEl=document.createElement('span');nomeEl.className='nome-bixo vhs';nomeEl.textContent=candidatura.nome||'SEM-NOME';textos.appendChild(nomeEl);
+  var statusEl=document.createElement('span');statusEl.className='status-bixo';
+  statusEl.textContent=candidatura.status==='pendente'?'diante do qawsed, esperando.':(candidatura.status==='aceito'?'aceito.':'negado.');
+  textos.appendChild(statusEl);
+  cab.appendChild(textos);
+  salaWrap.appendChild(cab);
+
+  if(candidatura.status==='pendente'){
+    var aviso=document.createElement('div');aviso.className='sala-aviso';
+    aviso.textContent='voce pode fechar essa aba a qualquer momento. sua conversa fica guardada, e quando o qawsed decidir, e so voltar em /qawsedista/ que essa mesma sala abre de novo, do jeito que voce deixou. seu numero: #'+vid+'.';
+    var bcopiar=document.createElement('button');bcopiar.type='button';bcopiar.className='tag';bcopiar.textContent='COPIAR NUMERO';
+    bcopiar.onclick=function(){copiarNumero('#'+vid,bcopiar)};
+    aviso.appendChild(bcopiar);
+    salaWrap.appendChild(aviso);
+  }
+
+  if(candidatura.status!=='pendente'){
+    var v=(D.veredito||{})[candidatura.status]||{};
+    var vd=document.createElement('div');vd.className='veredito veredito-resultado';
+    var h=document.createElement('h2');h.className='sigil';h.textContent=v.titulo||'';vd.appendChild(h);
+    var p=document.createElement('p');p.textContent=v.texto||'';vd.appendChild(p);
+    salaWrap.appendChild(vd);
+  }
+
+  var wrapChat=document.createElement('div');wrapChat.className='chat-qawsed';
+  var corpo=document.createElement('div');corpo.className='chat-corpo';
+  var lista=modo==='remoto'?mensagens:candidatura.mensagens;
+  lista.forEach(function(m){
+    var b=document.createElement('div');b.className='balao-chat'+(m.autor==='candidato'?' eu':'');
+    b.textContent=m.texto;corpo.appendChild(b);
+  });
+  wrapChat.appendChild(corpo);
+  salaWrap.appendChild(wrapChat);
+  corpo.scrollTop=corpo.scrollHeight;
+
+  if(candidatura.status==='pendente'){
+    var entrada=document.createElement('div');entrada.className='chat-entrada';
+    var input=document.createElement('input');input.type='text';input.maxLength=300;input.placeholder='fala com ele...';
+    var benviar=document.createElement('button');benviar.type='button';benviar.className='tag';benviar.textContent='ENVIAR';
+    function mandar(){var t=input.value;if(!t.trim())return;enviarMensagem('candidato',t);input.value=''}
+    benviar.onclick=mandar;
+    input.addEventListener('keydown',function(e){if(e.key==='Enter')mandar()});
+    entrada.appendChild(input);entrada.appendChild(benviar);
+    salaWrap.appendChild(entrada);
+  }else{
+    var reiniciar=document.createElement('button');reiniciar.type='button';reiniciar.className='sala-reiniciar';
+    reiniciar.textContent='apagar essa candidatura e recomecar do zero';
+    reiniciar.onclick=function(){
+      limparRef();
+      try{localStorage.removeItem('qaw_nome_bixin')}catch(e){}
+      if(candidatura.status==='aceito')try{localStorage.setItem('qaw_aceito','1')}catch(e){}
+      location.reload();
+    };
+    salaWrap.appendChild(reiniciar);
+    if(candidatura.status==='aceito')try{localStorage.setItem('qaw_aceito','1')}catch(e){}
+  }
+}
+
+/* ---- PAINEL DO DONO: lista quem esta esperando decisao de verdade, remoto (qualquer aparelho)
+   ou local (so nesse aparelho, quando o supabase nao ta configurado nesse deploy) -- nunca os dois
+   misturados, pra nunca dar de aparecer "ninguem esperando" enquanto tem gente esperando de fato. ---- */
 var painelEl=null;
 function montarPainelDono(){
   if(painelEl)return;
-  esperarSB(function(sb){
-    painelEl=document.createElement('div');painelEl.className='painel-dono';
-    painelEl.innerHTML='<h3 class="vhs">candidaturas pendentes</h3><div class="lista-candidaturas"></div>';
-    document.body.appendChild(painelEl);
-    var lista=painelEl.querySelector('.lista-candidaturas');
-    function decidirRemoto(id,status){sb.from('candidaturas').update({status:status}).eq('id',id).then(function(){})}
-    function renderLista(items){
-      lista.innerHTML='';
-      if(!items.length){var v=document.createElement('p');v.className='vazio';v.textContent='ninguem esperando.';lista.appendChild(v);return}
-      items.forEach(function(row){
-        var d=document.createElement('div');d.className='candidatura';
-        var t=document.createElement('p');t.textContent='visitante #'+row.visitor_id;d.appendChild(t);
-        var b=document.createElement('div');b.className='botoes';
-        var ac=document.createElement('button');ac.className='tag';ac.textContent='ACEITAR';
-        ac.onclick=function(){ac.disabled=true;ng.disabled=true;decidirRemoto(row.id,'aceito')};
-        var ng=document.createElement('button');ng.className='tag';ng.textContent='NEGAR';
-        ng.onclick=function(){ac.disabled=true;ng.disabled=true;decidirRemoto(row.id,'negado')};
-        b.appendChild(ac);b.appendChild(ng);d.appendChild(b);
-        lista.appendChild(d);
-      });
-    }
-    function carregar(){
-      sb.from('candidaturas').select('id,visitor_id,criado_em').eq('status','pendente').order('criado_em',{ascending:true}).then(function(r){renderLista(r.data||[])});
-    }
-    carregar();
-    sb.channel('painel-dono').on('postgres_changes',{event:'*',schema:'public',table:'candidaturas'},function(){carregar()}).subscribe();
+  painelEl=document.createElement('div');painelEl.className='painel-dono';
+  painelEl.innerHTML='<h3 class="vhs">candidaturas pendentes</h3><div class="lista-candidaturas"></div>';
+  document.body.appendChild(painelEl);
+  var lista=painelEl.querySelector('.lista-candidaturas');
+
+  function renderLista(items,remoto){
+    lista.innerHTML='';
+    if(!items.length){var v=document.createElement('p');v.className='vazio';v.textContent='ninguem esperando.';lista.appendChild(v);return}
+    items.forEach(function(row){
+      var d=document.createElement('div');d.className='candidatura';
+      var topo=document.createElement('div');topo.className='cab-candidatura';
+      topo.appendChild(montarAvatar(row.visitor_id,false,true));
+      var info=document.createElement('div');
+      var t=document.createElement('p');t.className='nome';t.textContent=(row.nome||'SEM-NOME')+' (#'+row.visitor_id+')';info.appendChild(t);
+      var b=document.createElement('div');b.className='botoes';
+      var ac=document.createElement('button');ac.className='tag';ac.textContent='ACEITAR';
+      var ng=document.createElement('button');ng.className='tag';ng.textContent='NEGAR';
+      var cv=document.createElement('button');cv.className='tag';cv.textContent='CONVERSA';
+      function decidir(status){
+        ac.disabled=true;ng.disabled=true;
+        if(remoto)sb.from('candidaturas').update({status:status}).eq('id',row.id).then(function(){});
+        else filaAtualizar(row.id,{status:status});
+      }
+      ac.onclick=function(){decidir('aceito')};
+      ng.onclick=function(){decidir('negado')};
+      b.appendChild(ac);b.appendChild(ng);b.appendChild(cv);
+      info.appendChild(b);
+      var conversaBox=document.createElement('div');conversaBox.className='conversa';conversaBox.style.display='none';
+      cv.onclick=function(){
+        var aberta=conversaBox.style.display!=='none';
+        conversaBox.style.display=aberta?'none':'block';
+        cv.textContent=aberta?'CONVERSA':'FECHAR';
+        if(!aberta)montarConversa(conversaBox,row,remoto,sb);
+      };
+      info.appendChild(conversaBox);
+      d.appendChild(topo);topo.appendChild(info);
+      lista.appendChild(d);
+    });
+  }
+
+  var sb=null;
+  function carregarRemoto(){
+    sb.from('candidaturas').select('id,visitor_id,nome,criado_em').eq('status','pendente').order('criado_em',{ascending:true}).then(function(r){renderLista(r.data||[],true)});
+  }
+  function carregarLocal(){
+    renderLista(filaLer().filter(function(c){return c.status==='pendente'}),false);
+  }
+
+  esperarSB(function(sbEncontrado){
+    sb=sbEncontrado;
+    carregarRemoto();
+    sb.channel('painel-dono').on('postgres_changes',{event:'*',schema:'public',table:'candidaturas'},function(){carregarRemoto()}).subscribe();
+  },function(){
+    carregarLocal();
+    filaOuvintes.push(carregarLocal);
   });
 }
 
-mostrarIntro();
-if(ehDono())esperarSB(function(){montarPainelDono()});
+function montarConversa(box,row,remoto,sb){
+  box.innerHTML='';
+  var corpo=document.createElement('div');corpo.className='chat-corpo';box.appendChild(corpo);
+  var entrada=document.createElement('div');entrada.className='chat-entrada';
+  var input=document.createElement('input');input.type='text';input.maxLength=300;input.placeholder='responde ele...';
+  var benviar=document.createElement('button');benviar.type='button';benviar.className='tag';benviar.textContent='ENVIAR';
+  entrada.appendChild(input);entrada.appendChild(benviar);box.appendChild(entrada);
+
+  function pintar(msgs){
+    corpo.innerHTML='';
+    if(!msgs.length){var v=document.createElement('p');v.className='vazia-conversa';v.textContent='sem mensagens ainda.';corpo.appendChild(v)}
+    msgs.forEach(function(m){var b=document.createElement('div');b.className='balao-chat'+(m.autor==='dono'?' eu':'');b.textContent=m.texto;corpo.appendChild(b)});
+    corpo.scrollTop=corpo.scrollHeight;
+  }
+  function mandar(){
+    var t=input.value;if(!t.trim())return;
+    if(remoto)sb.from('mensagens_candidatura').insert({candidatura_id:row.id,autor:'dono',texto:t.trim().slice(0,300)}).then(function(){});
+    else filaMensagem(row.id,'dono',t.trim().slice(0,300));
+    input.value='';
+  }
+  benviar.onclick=mandar;
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')mandar()});
+
+  if(remoto){
+    sb.from('mensagens_candidatura').select('*').eq('candidatura_id',row.id).order('id',{ascending:true}).then(function(r){pintar(r.data||[])});
+    sb.channel('painel-conversa-'+row.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'mensagens_candidatura',filter:'candidatura_id=eq.'+row.id},function(){
+      sb.from('mensagens_candidatura').select('*').eq('candidatura_id',row.id).order('id',{ascending:true}).then(function(r){pintar(r.data||[])});
+    }).subscribe();
+  }else{
+    pintar((filaAchar(row.id)||{mensagens:[]}).mensagens);
+    filaOuvintes.push(function(){var achada=filaAchar(row.id);if(achada)pintar(achada.mensagens)});
+  }
+}
+
+var refExistente=lerRef();
+if(refExistente){iniciarJulgamento()}else{mostrarIntro()}
+if(ehDono())montarPainelDono();
 })();

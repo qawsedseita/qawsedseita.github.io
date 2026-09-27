@@ -36,8 +36,12 @@ create table if not exists candidaturas (
   id bigint generated always as identity primary key,
   criado_em timestamptz not null default now(),
   visitor_id bigint not null,
+  nome text,
   status text not null default 'pendente' check (status in ('pendente','aceito','negado'))
 );
+
+-- se a tabela ja existia de uma versao anterior (sem a coluna "nome"), isso adiciona ela sem quebrar nada
+alter table candidaturas add column if not exists nome text;
 
 alter table candidaturas enable row level security;
 
@@ -50,3 +54,22 @@ create policy "insercao publica candidaturas" on candidaturas for insert with ch
 create policy "atualizacao publica candidaturas" on candidaturas for update using (true) with check (status in ('aceito','negado'));
 
 alter publication supabase_realtime add table candidaturas;
+
+-- ============================================================
+-- BLOCO NOVO (chat ao vivo entre voce e quem esta se candidatando).
+-- Se voce ja rodou os blocos acima antes, so precisa rodar DAQUI PRA BAIXO.
+-- ============================================================
+
+create table if not exists mensagens_candidatura (
+  id bigint generated always as identity primary key,
+  criado_em timestamptz not null default now(),
+  candidatura_id bigint not null references candidaturas(id) on delete cascade,
+  autor text not null check (autor in ('candidato','dono')),
+  texto text not null check (char_length(texto) between 1 and 300)
+);
+
+alter table mensagens_candidatura enable row level security;
+create policy "leitura publica mensagens_candidatura" on mensagens_candidatura for select using (true);
+create policy "insercao publica mensagens_candidatura" on mensagens_candidatura for insert with check (true);
+
+alter publication supabase_realtime add table mensagens_candidatura;
