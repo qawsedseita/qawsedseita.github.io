@@ -40,11 +40,77 @@ function bixo(i,eu){
   camadasBixo(i,eu).forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)});
   d.appendChild(q);
   if(eu){var t=document.createElement('span');t.className='tag voce';t.textContent='VOCE';d.appendChild(t)}
+  d.addEventListener('click',function(){abrirFicha(i)});
   el.appendChild(d);
   var x=rnd(i*11+3)*(el.clientWidth-W),y=rnd(i*13+7)*(el.clientHeight-H);
   bichos.push({d:d,q:q,x:x,y:y,tx:x,ty:y,esp:18+rnd(i*17+1)*22,par:rnd(i*19)*3,f:-1,i:i});
 }
 function refazBixo(b){var q=b.q;q.innerHTML='';camadasBixo(b.i,b.i===id).forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)})}
+
+/* ---- FICHA: toca num bixinho (o seu ou de qualquer um) e ve o nome dele e tudo que ele ja falou ---- */
+function esc2(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtQuando(iso){
+  try{var dt=new Date(iso),ago=(Date.now()-dt.getTime())/1000;
+    if(ago<60)return 'agora mesmo';
+    if(ago<3600)return 'ha '+Math.floor(ago/60)+'min';
+    if(ago<86400)return 'ha '+Math.floor(ago/3600)+'h';
+    return dt.toLocaleDateString('pt-BR');
+  }catch(e){return ''}
+}
+function abrirFicha(vid){
+  var ov=document.createElement('div');ov.className='ficha-ov';
+  var card=document.createElement('div');card.className='ficha-card';
+  ov.appendChild(card);document.body.appendChild(ov);
+  requestAnimationFrame(function(){ov.classList.add('in')});
+  function fechar(){ov.classList.remove('in');setTimeout(function(){ov.remove()},250)}
+  ov.addEventListener('click',function(e){if(e.target===ov)fechar()});
+  document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){fechar();document.removeEventListener('keydown',esc)}});
+  card.innerHTML='<p class="ficha-carregando vhs">abrindo ficha #'+vid+'...</p>';
+
+  if(!sb){
+    var localCand=null;
+    try{var fila=JSON.parse(localStorage.qawsed_fila_local||'[]');fila.forEach(function(c){if(c.visitor_id===vid)localCand=c})}catch(e){}
+    var falasLocais=localCand?localCand.mensagens.filter(function(m){return m.autor==='candidato'}).map(function(m){return {texto:m.texto,quando:null}}):[];
+    montarFicha(card,vid,localCand,falasLocais,fechar,vid===id);
+    return;
+  }
+  sb.from('candidaturas').select('id,nome,status,criado_em').eq('visitor_id',vid).order('criado_em',{ascending:false}).limit(1).then(function(r){
+    var cand=(r.data&&r.data[0])||null;
+    var p1=cand?sb.from('mensagens_candidatura').select('texto,criado_em').eq('candidatura_id',cand.id).eq('autor','candidato').order('id',{ascending:true}):Promise.resolve({data:[]});
+    var p2=sb.from('comentarios').select('texto,criado_em').eq('visitor_id',vid).order('id',{ascending:true});
+    Promise.all([p1,p2]).then(function(res){
+      var falas=(res[0].data||[]).map(function(m){return {texto:m.texto,quando:m.criado_em,onde:'no julgamento'}})
+        .concat((res[1].data||[]).map(function(c){return {texto:c.texto,quando:c.criado_em,onde:'num comentario'}}));
+      falas.sort(function(a,b){return new Date(a.quando)-new Date(b.quando)});
+      montarFicha(card,vid,cand,falas,fechar,vid===id);
+    });
+  });
+}
+function montarFicha(card,vid,cand,falas,fechar,eu){
+  card.innerHTML='';
+  var bfechar=document.createElement('button');bfechar.type='button';bfechar.className='ficha-fechar';bfechar.setAttribute('aria-label','fechar');bfechar.textContent='×';
+  bfechar.onclick=fechar;card.appendChild(bfechar);
+  var cab=document.createElement('div');cab.className='ficha-cabecalho';
+  var av=document.createElement('div');av.className='avatar-bixo';var q=document.createElement('div');q.className='q';
+  camadasBixo(vid,(cand&&cand.status==='aceito')||(eu&&souAceito())).forEach(function(n){var m=document.createElement('img');m.src=B+'assets/bixinhos/'+n+'.png';m.className='cor';q.appendChild(m)});
+  av.appendChild(q);cab.appendChild(av);
+  var textos=document.createElement('div');
+  var nome=document.createElement('span');nome.className='nome-bixo vhs';nome.textContent=(cand&&cand.nome)?cand.nome:'SEM NOME (#'+vid+')';textos.appendChild(nome);
+  var status=document.createElement('span');status.className='status-bixo';
+  status.textContent=cand?({pendente:'esperando o veredito.',aceito:'e um qawsedista.',negado:'foi negado.'}[cand.status]||''):(eu?'voce ainda nao se candidatou.':'nunca se candidatou.');
+  textos.appendChild(status);cab.appendChild(textos);
+  card.appendChild(cab);
+  var lista=document.createElement('div');lista.className='ficha-falas';
+  if(!falas.length){var v=document.createElement('p');v.className='ficha-vazia';v.textContent='ele nunca falou nada aqui.';lista.appendChild(v)}
+  falas.forEach(function(f){
+    var linha=document.createElement('p');linha.className='ficha-fala';
+    linha.innerHTML='<span class="ficha-fala-texto"></span>'+(f.onde?' <span class="ficha-fala-onde">('+esc2(f.onde)+(f.quando?', '+esc2(fmtQuando(f.quando)):'')+')</span>':'');
+    linha.querySelector('.ficha-fala-texto').textContent=f.texto;
+    lista.appendChild(linha);
+  });
+  card.appendChild(lista);
+  if(!sb){var av2=document.createElement('p');av2.className='ficha-aviso';av2.textContent='(esse deploy ta sem supabase ligado -- so da pra ver ficha de bixinho nesse mesmo aparelho.)';card.appendChild(av2)}
+}
 var ult=performance.now(),comida=null;
 function anda(agora){
   var dt=Math.min((agora-ult)/1000,.1);ult=agora;
