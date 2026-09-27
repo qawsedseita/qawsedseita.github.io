@@ -5,23 +5,6 @@ intro:
   - depois de comecar, nao tem "tentar de novo". o que voce responder, responder.
   - no final a gente entra os dois numa sala. eu, e o que sobrou de voce.
   - so eu decido se voce fica. e posso decidir a qualquer momento.
-nomes_bixin:
-  - CARCACA
-  - OLHO-VAGO
-  - SOMBRA-FINA
-  - PELE-VELHA
-  - MEIA-VOZ
-  - RESTO
-  - BOCA-DE-LATA
-  - OSSO-SOLTO
-  - CINZA-ANDANTE
-  - SEM-ROSTO
-  - UNHA-PRETA
-  - VULTO
-  - PASSO-LENTO
-  - RUIDO-BAIXO
-  - CASCA
-  - MARCA-D-AGUA
 perguntas:
   - texto: Se voce estivesse andando a noite em uma rua deserta completamente sozinho(a) e faltasse luz nesse momento, como agiria?
     opcoes:
@@ -53,30 +36,42 @@ desafios:
   - tipo: reacao
     label: O SINAL
     instrucao: quando o quadrado ficar cheio, toque nele. se hesitar, ele ja era.
+    duracao: 5
   - tipo: memoria
     label: A SEQUENCIA
     instrucao: decore a ordem dos simbolos. depois repita, na mesma ordem. uma chance so.
+    duracao: 5
   - tipo: segurar
     label: O PESO
     instrucao: segure o simbolo sem soltar ate o fim. soltar antes e desistir.
     duracao: 5
 chat:
-  - "..."
+  - ...
   - eu vi tudo o que voce fez ai.
-  - cada resposta. cada hesitacao. cada vez que sua mao tremeu no sinal.
+  - meu fi... n sei não
   - agora eu preciso decidir uma coisa.
   - voce fica, ou volta pra escuridao de onde veio.
 veredito:
   aceito:
     titulo: NOVO SANGUE
-    texto: >-
-      Novo Sangue... agora você faz parte do Qawsedismo, que os deuses Qã, Sûr e Wér
-      guardem seus passos, vigiem seu sono e nunca desviem o olhar de você. Seu nome
-      foi escrito no Rebanho. A porta que se fechou atrás de você não abre de novo —
-      mas agora você já está do lado de dentro. Bem-vindo(a), irmão(ã).
+    texto: Novo Sangue... agora você faz parte do Qawsedismo, que os deuses Qã, Sûr e Wér guardem seus passos, vigiem seu sono e nunca desviem o olhar de você. Seu nome foi escrito no Rebanho. A porta que se fechou atrás de você não abre de novo — mas agora você já está do lado de dentro. Bem-vindo(a), irmão(ã).
   negado:
     titulo: A PORTA CONTINUA FECHADA
-    texto: >-
-      Os deuses Qã, Sûr e Wér olharam pra você e não reconheceram nada ali. Não
-      hoje. A escuridão te devolve pra onde você veio, sem rancor — só sem lugar
-      pra você aqui dentro. Talvez numa outra vida.
+    texto: Os deuses Qã, Sûr e Wér olharam pra você e não reconheceram nada ali. Não hoje. A escuridão te devolve pra onde você veio, sem rancor — só sem lugar pra você aqui dentro. Talvez numa outra vida.
+nomes_bixin:
+  - CARCACA
+  - OLHO-VAGO
+  - SOMBRA-FINA
+  - PELE-VELHA
+  - MEIA-VOZ
+  - RESTO
+  - BOCA-DE-LATA
+  - OSSO-SOLTO
+  - CINZA-ANDANTE
+  - SEM-ROSTO
+  - UNHA-PRETA
+  - VULTO
+  - PASSO-LENTO
+  - RUIDO-BAIXO
+  - CASCA
+  - MARCA-D-AGUA
